@@ -1,12 +1,13 @@
 package com.mobicom.s17.group8.mobicom_mco.ui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.tooling.preview.Preview
 import com.mobicom.s17.group8.mobicom_mco.ui.components.AppTopBar
 import com.mobicom.s17.group8.mobicom_mco.ui.components.BottomNavBar
 import com.mobicom.s17.group8.mobicom_mco.ui.theme.MOBICOM_MCOTheme
@@ -24,68 +25,87 @@ fun HomeScreen() {
             )
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("June 13th", style = MaterialTheme.typography.labelMedium)
-            Spacer(modifier = Modifier.height(4.dp))
+            item { GreetingSection() }
+            item { OverviewCard() }
+            item { StartStudyingButton() }
+            item { TodayTasksCard() }
+            item { StudySetsCard() }
+        }
+    }
+}
 
-            Text("Hello, Kyoka!", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(12.dp))
+@Composable
+fun GreetingSection() {
+    Column {
+        Text("June 13th", style = MaterialTheme.typography.labelMedium)
+        Spacer(modifier = Modifier.height(4.dp))
+        Text("Hello, Kyoka!", style = MaterialTheme.typography.titleMedium)
+    }
+}
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                shape = MaterialTheme.shapes.medium,
-                elevation = CardDefaults.cardElevation()
-            ) {
-                // ahmm
-            }
+@Composable
+fun OverviewCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation()
+    ) {
+        // content here
+    }
+}
 
-            Spacer(modifier = Modifier.height(16.dp))
+@Composable
+fun StartStudyingButton() {
+    Button(
+        onClick = { /* TODO: navigate to study sets */ },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Text("Start Studying ➜", style = MaterialTheme.typography.bodyMedium)
+    }
+}
 
-            Button(
-                onClick = { /* TODO: navigate to study sets */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = MaterialTheme.shapes.large
-            ) {
-                Text("Start Studying ➜", style = MaterialTheme.typography.bodyMedium)
-            }
+@Composable
+fun TodayTasksCard() {
+    Column {
+        Text("Today’s Tasks", style = MaterialTheme.typography.titleSmall)
+        Spacer(modifier = Modifier.height(8.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp),
+            shape = MaterialTheme.shapes.medium,
+            elevation = CardDefaults.cardElevation()
+        ) {
+            // content here
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(20.dp))
+@Composable
+fun StudySetsCard() {
+    Column {
+        Text("Study Sets", style = MaterialTheme.typography.titleSmall)
+        Spacer(modifier = Modifier.height(8.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp),
+            shape = MaterialTheme.shapes.medium,
+            elevation = CardDefaults.cardElevation()
+        ) {
+            // content here
 
-            Text("Today’s Tasks", style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                shape = MaterialTheme.shapes.medium,
-                elevation = CardDefaults.cardElevation()
-            ) {
-                // task list here
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Text("Study Sets", style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                shape = MaterialTheme.shapes.medium,
-                elevation = CardDefaults.cardElevation()
-            ) {
-                // study set cards here
-            }
         }
     }
 }
