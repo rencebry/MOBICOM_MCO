@@ -14,7 +14,7 @@ data class NavItem(val label: String, val iconRes: Int)
 val bottomNavItems = listOf(
     NavItem("Home", R.drawable.person),
     NavItem("To-do", R.drawable.check_box),
-    NavItem("Pomo", R.drawable.schedule),
+    NavItem("Pomo", R.drawable.timer),
     NavItem("Music", R.drawable.music_note),
     NavItem("Study", R.drawable.folder)
 )
