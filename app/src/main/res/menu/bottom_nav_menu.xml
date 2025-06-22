@@ -6,15 +6,15 @@
         android:title="@string/nav_home" />
     <item
         android:id="@+id/nav_todo"
-        android:icon="@drawable/check_box"
+        android:icon="@drawable/checkbox"
         android:title="@string/nav_todo" />
     <item
         android:id="@+id/nav_pomo"
-        android:icon="@drawable/schedule"
+        android:icon="@drawable/time"
         android:title="@string/nav_pomo" />
     <item
         android:id="@+id/nav_music"
-        android:icon="@drawable/music_note"
+        android:icon="@drawable/music"
         android:title="@string/nav_music" />
     <item
         android:id="@+id/nav_study"

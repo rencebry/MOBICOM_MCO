@@ -22,7 +22,8 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ivStar"
+        android:id="@+id/ivSettings"
+        android:contentDescription="Settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/standard_margin"
@@ -74,7 +75,7 @@
         app:cardCornerRadius="@dimen/card_corner_radius"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@id/ivStar"
+        app:layout_constraintEnd_toEndOf="@id/ivSettings"
         app:layout_constraintStart_toStartOf="@id/tvAppTitle"
         app:layout_constraintTop_toBottomOf="@id/tvGreeting" />
 
@@ -127,7 +128,6 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:paddingTop="5sp"
-        app:itemIconTint="@color/black"
         app:itemTextColor="@color/text_secondary"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
