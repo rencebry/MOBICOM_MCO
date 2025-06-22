@@ -26,4 +26,12 @@
     <color name="text_secondary">#757575</color>
     <color name="background_light_gray">#F5F5F5</color>
     <color name="input_field_gray">#EEEEEE</color>
+
+    <!-- Vinyl -->
+    <color name="vinyl_blue">#5A8392</color>
+    <color name="vinyl_green">#6A8A7A</color>
+    <color name="vinyl_yellow">#D4B98A</color>
+    <color name="vinyl_orange">#E8A987</color>
+    <color name="vinyl_purple">#A893B1</color>
+    <color name="vinyl_mint">#A9D0B6</color>
 </resources>
