@@ -1,3 +1,31 @@
 <resources>
-    <string name="app_name">MOBICOM_MCO</string>
+    <string name="app_name">Study With Me</string>
+
+    <!-- Landing Page -->
+    <string name="welcome_to">Welcome to</string>
+    <string name="study_with_me">Study With Me.</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="log_in">Log-in</string>
+
+    <!-- Log-in Page -->
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="ready_for_a_productive_day">Ready for a productive day?</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+
+    <!-- Sign-up Page -->
+    <string name="study_with_me_subtitle">Study with me</string>
+    <string name="create_a_username">Create a username</string>
+    <string name="create_a_password">Create a password</string>
+    <string name="sign_up">Sign-up</string>
+
+    <!-- Home Page -->
+    <string name="hello_user">Hello, %1$s!</string>
+    <string name="start_studying">Start Studying</string>
+    <string name="todays_tasks">Today\'s Tasks</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_todo">To-do</string>
+    <string name="nav_pomo">Pomo</string>
+    <string name="nav_music">Music</string>
+    <string name="nav_study">Study</string>
 </resources>
