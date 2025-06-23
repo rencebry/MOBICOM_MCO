@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco
+package com.mobicom.s17.group8.mobicom_mco.music
 
 import androidx.annotation.ColorRes
 

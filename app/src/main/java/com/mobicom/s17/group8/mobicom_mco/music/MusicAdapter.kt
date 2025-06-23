@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco
+package com.mobicom.s17.group8.mobicom_mco.music
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

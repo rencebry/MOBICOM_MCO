@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco
+package com.mobicom.s17.group8.mobicom_mco.auth
 
 import android.content.Intent
 import android.os.Bundle

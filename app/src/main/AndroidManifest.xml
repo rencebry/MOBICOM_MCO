@@ -12,22 +12,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MOBICOM_MCO"
         tools:targetApi="31">
+
         <activity
-            android:name=".LandingActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.MOBICOM_MCO">
+            android:name=".auth.LandingActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".MusicActivity" />
+        <activity android:name=".auth.LoginActivity" />
+        <activity android:name=".auth.SignupActivity" />
+        <activity android:name=".main.MainActivity" />
+
 
     </application>
 
