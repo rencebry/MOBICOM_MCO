@@ -14,69 +14,75 @@ class MusicAdapter(
     private val onTrackClicked: (MusicTrack?) -> Unit
 ) : RecyclerView.Adapter<MusicAdapter.MusicViewHolder>() {
 
-    private var currentlySpinningPosition = -1 // vinyl position
+    private var selectedPosition = -1
+    private var isPlaying = false
 
-    // manage each music item view
     inner class MusicViewHolder(val binding: ListItemMusicBinding) : RecyclerView.ViewHolder(binding.root) {
-        var animator: ObjectAnimator? = null // rotate view
+        var animator: ObjectAnimator? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MusicViewHolder {
         val binding = ListItemMusicBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MusicViewHolder(binding)
+        val holder = MusicViewHolder(binding)
+
+        holder.itemView.setOnClickListener {
+            val currentPosition = holder.adapterPosition
+            if (currentPosition == RecyclerView.NO_POSITION) return@setOnClickListener
+
+            // user clicks the currently selected track (deselect)
+            val newTrack = if (currentPosition == selectedPosition) null else musicList[currentPosition]
+            onTrackClicked(newTrack)
+        }
+        return holder
     }
 
     override fun getItemCount() = musicList.size
 
-    // binding data to each item view
     override fun onBindViewHolder(holder: MusicViewHolder, position: Int) {
         val track = musicList[position]
-
         holder.binding.apply {
             tvMusicTitle.text = "♪ ${track.name}"
-
-            // color in the middle
             val centerColor = ContextCompat.getColor(root.context, track.centerColorResId)
             ivVinylCenter.background.setTint(centerColor)
 
-            holder.animator?.cancel()
-            //animate
-            if (position == currentlySpinningPosition) {
-                holder.animator = ObjectAnimator.ofFloat(ivVinylRecord, "rotation", 0f, 360f).apply {
-                    duration = 4000
-                    repeatCount = ValueAnimator.INFINITE
-                    interpolator = LinearInterpolator()
+            if (position == selectedPosition && isPlaying) {
+                // start rot
+                if (holder.animator == null) {
+                    holder.animator = ObjectAnimator.ofFloat(ivVinylRecord, "rotation", 0f, 360f).apply {
+                        duration = 4000
+                        repeatCount = ValueAnimator.INFINITE
+                        interpolator = LinearInterpolator()
+                    }
                 }
-                holder.animator?.start()
+                if (!holder.animator!!.isStarted) {
+                    holder.animator?.start() // start
+                } else if (holder.animator!!.isPaused) {
+                    holder.animator?.resume() // resume
+                }
             } else {
-                ivVinylRecord.rotation = 0f // if not selected, vinyl stops rotation
+                // not selected or paused
+                holder.animator?.pause() // pause
+                if (position != selectedPosition) {
+                    ivVinylRecord.rotation = 0f // reset rot
+                }
             }
         }
+    }
 
-        // for clicking items
-        holder.binding.root.setOnClickListener {
-            val currentPosition = holder.adapterPosition
-            if (currentPosition == RecyclerView.NO_POSITION) {
-                return@setOnClickListener
-            }
+    fun setPlaybackState(newSelectedPosition: Int, newIsPlaying: Boolean) {
+        val oldSelectedPosition = selectedPosition
+        val oldIsPlaying = isPlaying
 
-            val previousSpinningPosition = currentlySpinningPosition
+        selectedPosition = newSelectedPosition
+        isPlaying = newIsPlaying
 
-            // item is clicked again, stop spinning
-            if (currentPosition == currentlySpinningPosition) {
-                currentlySpinningPosition = -1
-                onTrackClicked(null) // clear selection
-            } else {
-                currentlySpinningPosition = currentPosition
-                onTrackClicked(musicList[currentPosition])
-            }
-
-            // refresh prev item
-            if (previousSpinningPosition != -1) {
-                notifyItemChanged(previousSpinningPosition)
-            }
-            // refresh current item
-            notifyItemChanged(currentlySpinningPosition)
+        // update old item
+        if (oldSelectedPosition != -1 && oldSelectedPosition != newSelectedPosition) {
+            notifyItemChanged(oldSelectedPosition)
+        }
+        // update the new item
+        if (newSelectedPosition != -1) {
+            notifyItemChanged(newSelectedPosition)
         }
     }
 }
