@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".music.MusicFragment">
+
     <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBarContainer"
@@ -24,23 +25,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/standard_margin"
             android:layout_marginTop="24dp"
-            android:text="@string/study_with_me"
+            android:text="Ambient Music Catalogue"
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/ivSettings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/standard_margin"
-            android:contentDescription="@string/settings"
-            android:src="@drawable/settings"
-            app:layout_constraintBottom_toBottomOf="@id/tvAppTitle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvAppTitle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
