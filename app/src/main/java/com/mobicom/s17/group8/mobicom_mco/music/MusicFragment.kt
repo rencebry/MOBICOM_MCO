@@ -32,13 +32,12 @@ class MusicFragment : Fragment() {
     private fun setupRecyclerView() {
         val musicTracks = getMusicData()
         val musicAdapter = MusicAdapter(musicTracks) { track ->
-            Toast.makeText(
-                requireContext(),
-                "Playing ${track.name}",
-                Toast.LENGTH_SHORT
-            ).show()
+            if (track != null) {
+                Toast.makeText(requireContext(), "Playing ${track.name}", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Playback stopped", Toast.LENGTH_SHORT).show()
+            }
         }
-
         binding.rvMusicGrid.apply {
             adapter = musicAdapter
         }
