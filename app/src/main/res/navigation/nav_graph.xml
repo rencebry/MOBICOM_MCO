@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/nav_pomo"
+        android:name="com.mobicom.s17.group8.mobicom_mco.pomo.PomoFragment"
+        android:label="fragment_pomo"
+        tools:layout="@layout/fragment_pomo" />
+
+    <fragment
         android:id="@+id/nav_music"
         android:name="com.mobicom.s17.group8.mobicom_mco.music.MusicFragment"
         android:label="fragment_music"
@@ -22,6 +28,7 @@
         android:name="com.mobicom.s17.group8.mobicom_mco.todo.TodoFragment"
         android:label="fragment_todo"
         tools:layout="@layout/fragment_todo_list" />
+
 <!--    to include other fragments-->
 
 </navigation>
