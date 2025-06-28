@@ -23,12 +23,15 @@
         android:label="fragment_music"
         tools:layout="@layout/fragment_music" />
 
+<!--    <fragment-->
+<!--        android:id="@+id/nav_todo"-->
+<!--        android:name="com.mobicom.s17.group8.mobicom_mco.todo.TodoFragment"-->
+<!--        android:label="fragment_todo"-->
+<!--        tools:layout="@layout/fragment_todo_list" />-->
+
     <fragment
-        android:id="@+id/nav_todo"
-        android:name="com.mobicom.s17.group8.mobicom_mco.todo.TodoFragment"
-        android:label="fragment_todo"
-        tools:layout="@layout/fragment_todo_list" />
-
-<!--    to include other fragments-->
-
+        android:id="@+id/nav_study"
+        android:name="com.mobicom.s17.group8.mobicom_mco.study.StudyFragment"
+        android:label="fragment_study"
+        tools:layout="@layout/fragment_study" />
 </navigation>
