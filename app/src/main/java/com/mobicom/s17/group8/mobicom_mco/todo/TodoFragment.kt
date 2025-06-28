@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import android.widget.ArrayAdapter
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentTodoListBinding
@@ -33,8 +34,7 @@ class TodoFragment : Fragment() {
 
         binding.addTaskFab.setOnClickListener {
             // Handle add task button click
-            // This could open a dialog or a new fragment to add a new task
-            // For now, we can just show a message or log it
+            findNavController().navigate(R.id.action_nav_todo_to_new_task)
         }
     }
 

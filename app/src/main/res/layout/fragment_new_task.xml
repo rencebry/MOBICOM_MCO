@@ -36,25 +36,202 @@
         android:id="@+id/taskTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="8dp"
+        android:font="@font/bg"
         android:text="@string/task_name"
         android:textColor="@color/text_primary"
         android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/taskNameEtv"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/returnButton"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/taskDetailsTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
+        android:font="@font/bg"
+        android:text="@string/details"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/taskDetailsEtv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskNameEtv"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/taskLabelTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="7dp"
+
+        android:font="@font/bg"
+        android:text="@string/label"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/taskLabelEtv"
+        app:layout_constraintStart_toStartOf="@+id/taskFreqEtv"
+        app:layout_constraintTop_toBottomOf="@+id/taskFreqEtv" />
+
+    <TextView
+        android:id="@+id/setDueDateTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:font="@font/bg"
+        android:text="@string/set_due_date"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/dueDateSwitch"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskDetailsEtv" />
 
     <EditText
         android:id="@+id/taskNameEtv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/edittext_background"
         android:hint="@string/task_name_hint"
         android:inputType="text"
         android:padding="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/taskDetailsEtv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newTaskTv" />
+
+    <EditText
+        android:id="@+id/taskLabelEtv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="518dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="250dp"
+        android:background="@drawable/edittext_background"
+        android:hint="@string/label_hint"
+        android:inputType="text"
+        android:padding="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/submitBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/taskDetailsEtv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="13dp"
+        android:background="@drawable/edittext_background"
+        android:hint="@string/details_hint"
+        android:inputType="text"
+        android:padding="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/dueDateSwitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskDetailsTv" />
+
+    <EditText
+        android:id="@+id/taskFreqEtv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/edittext_background"
+        android:hint="@string/repeat_hint"
+        android:inputType="text"
+        android:padding="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/taskLabelEtv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editDueDate"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Switch
+        android:id="@+id/dueDateSwitch"
+        android:layout_width="58dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskDetailsEtv" />
+
+    <EditText
+        android:id="@+id/editDueDate"
+        android:layout_width="182dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="28dp"
+        android:background="@drawable/edittext_background"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/set_date_hint"
+        android:inputType="date"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/setDueDateTv" />
+
+    <EditText
+        android:id="@+id/editDueTime"
+        android:layout_width="182dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="19dp"
+        android:background="@drawable/edittext_background"
+        android:ems="10"
+        android:gravity="center"
+        android:hint="@string/set_time_hint"
+        android:inputType="time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/editDueDate"
+        app:layout_constraintTop_toBottomOf="@+id/dueDateSwitch" />
+
+    <Button
+        android:id="@+id/submitBtn"
+        android:layout_width="120dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/timer_background_gray"
+        android:text="@string/save_button"
+        android:textColor="@color/text_secondary"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="133dp" />
+        app:layout_constraintTop_toBottomOf="@+id/taskLabelEtv" />
+
+    <ImageView
+        android:id="@+id/starredBtn"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="12dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@+id/taskNameEtv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/taskTv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/star_border" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

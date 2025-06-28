@@ -46,6 +46,9 @@
     <string name="set_time_hint">Select Time</string>
     <string name="repeat_hint">Does not repeat</string>
     <string name="label">Label</string>
+    <string name="label_hint">My Tasks</string>
+
+    <string name="save_button">Save</string>
 <!--    <string-array name="view_options">-->
 <!--        <item>List</item>-->
 <!--        <item>Calendar</item>-->
