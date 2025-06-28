@@ -10,7 +10,7 @@
     <!-- Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/topBarContainer"
-        android:layout_width="411dp"
+        android:layout_width="0dp"
         android:layout_height="72dp"
         android:background="@color/white"
         android:elevation="4dp"
@@ -91,7 +91,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/vinyl_blue"
-        android:drawableEnd="@drawable/arrow"
+        app:icon="@drawable/arrow"
+        app:iconGravity="end"
+        app:iconTint="@color/white"
         android:tint="@color/black"
         android:padding="12dp"
         android:text="@string/start_studying"
@@ -119,12 +121,27 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="@dimen/standard_margin"
-        android:backgroundTint="@color/background_light_gray"
+        app:cardBackgroundColor="@color/background_light_gray"
+
         app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/btnStartStudying"
         app:layout_constraintStart_toStartOf="@id/btnStartStudying"
-        app:layout_constraintTop_toBottomOf="@id/tvTasksTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTasksTitle" >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHomeTasks"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="4"
+
+        tools:listitem="@layout/list_item_task" />
+
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
