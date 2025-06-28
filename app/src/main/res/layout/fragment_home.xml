@@ -71,16 +71,16 @@
         app:layout_constraintTop_toBottomOf="@id/tvDate"
         tools:text="Hello, Kyoka!" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardStudy"
+    <include
+        android:id="@+id/profileCard"
+        layout="@layout/card_profile"
         android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/standard_margin"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_background"
+        app:backgroundTint="#F3EADC"
         android:layout_marginEnd="@dimen/standard_margin"
-        app:cardCornerRadius="@dimen/card_corner_radius"
-        android:backgroundTint="@color/background_light_gray"
-        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvGreeting" />
@@ -90,16 +90,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/color_1020Y20R"
+        android:backgroundTint="@color/vinyl_blue"
         android:drawableEnd="@drawable/arrow"
         android:tint="@color/black"
         android:padding="12dp"
         android:text="@string/start_studying"
         android:textAllCaps="false"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="@id/cardStudy"
-        app:layout_constraintStart_toStartOf="@id/cardStudy"
-        app:layout_constraintTop_toBottomOf="@id/cardStudy" />
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@id/profileCard"
+        app:layout_constraintStart_toStartOf="@id/profileCard"
+        app:layout_constraintTop_toBottomOf="@id/profileCard" />
 
     <TextView
         android:id="@+id/tvTasksTitle"

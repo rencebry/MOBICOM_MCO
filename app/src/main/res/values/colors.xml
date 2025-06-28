@@ -38,6 +38,7 @@
     <color name="button_start_color">#5A8392</color>
     <color name="button_stop_color">#424242</color>
 
+
     <color name="timer_background_gray">#E0E0E0</color>
     <color name="timer_progress_dark">#424242</color>
 </resources>
