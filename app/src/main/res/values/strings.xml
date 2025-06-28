@@ -64,5 +64,38 @@
 <!--        <item>All Tasks</item>-->
 <!--        <item>My Tasks</item>-->
 <!--        <item>Task List 1</item>-->
-<!--    </string-array>-->
+<!--    </string-array>-->    
+
+    <!-- Decks Page -->
+    <string name="decks_page">Decks</string>
+    <string name="backtoCourses">Back to Courses</string>
+    <string name="deck_name">Deck Name</string>
+    <string name="deck_star">Favorite</string>
+    <string name="deck_stat">Date created | X flashcards</string>
+    <string name="deck_play">Play deck</string>
+    <string name="deck_menu">Menu</string>
+    <string name="add_deck">Add deck</string>
+
+    <!-- Deck menu -->
+    <string name="add_flashcards">Add flashcard/s</string>
+    <string name="rename_deck">Rename</string>
+    <string name="delete_deck">Delete</string>
+    <string name="export_deck">Export deck (.txt)</string>
+
+    <!-- Flashcards page -->
+    <string name="flashcards_page">Flashcards</string>
+    <string name="backtoDecks">Back to Decks</string>
+    <string name="flashcard_number">#</string>
+    <string name="flashcard_term">Term</string>
+    <string name="flashcard_definition">Definition</string>
+    <string name="flashcard_menu">Menu</string>
+    <string name="add_cards">Add Card/s</string>
+
+    <!-- Flashcard menu -->
+    <string name="edit_flashcard">Edit</string>
+    <string name="delete_flashcard">Delete</string>
+    <string name="copy_flashcard">Copy text</string>
+
+    <!-- Playing Flashcards -->
+    <string name="flashcard_favorite">Favorite this card</string>
 </resources>
