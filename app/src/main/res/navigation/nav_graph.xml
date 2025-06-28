@@ -23,11 +23,23 @@
         android:label="fragment_music"
         tools:layout="@layout/fragment_music" />
 
+<!-- fragments for to-do   -->
     <fragment
         android:id="@+id/nav_todo"
         android:name="com.mobicom.s17.group8.mobicom_mco.todo.TodoFragment"
         android:label="fragment_todo"
-        tools:layout="@layout/fragment_todo_list" />
+        tools:layout="@layout/fragment_todo_list">
+
+        <action
+            android:id="@+id/action_nav_todo_to_new_task"
+            app:destination="@id/new_task_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/new_task_fragment"
+        android:name="com.mobicom.s17.group8.mobicom_mco.todo.NewTaskFragment"
+        android:label="fragment_new_task"
+        tools:layout="@layout/fragment_new_task" />
 
     <fragment
         android:id="@+id/nav_study"

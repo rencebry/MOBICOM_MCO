@@ -46,7 +46,7 @@
         android:visibility="invisible"
         app:layout_constraintStart_toEndOf="@+id/taskNameTv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/starred" />
+        app:srcCompat="@drawable/star" />
 
     <ImageButton
         android:id="@+id/flashcardMenu"
