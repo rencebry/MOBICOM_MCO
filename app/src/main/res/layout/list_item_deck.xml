@@ -79,5 +79,5 @@
         app:layout_constraintBottom_toTopOf="@+id/taskInfoTv"
         app:layout_constraintStart_toEndOf="@+id/taskNameTv"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/starred" />
+        app:srcCompat="@drawable/star" />
 </androidx.constraintlayout.widget.ConstraintLayout>
