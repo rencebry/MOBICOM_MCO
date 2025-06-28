@@ -34,8 +34,9 @@ class StudyFragment : Fragment() {
         }
 
         binding.fabAddCourse.setOnClickListener {
-            // TODO: Add course prompt
+            AddCourseDialogFragment().show(parentFragmentManager, "AddCourseDialog")
         }
+
     }
 
     private fun setupRecyclerView() {

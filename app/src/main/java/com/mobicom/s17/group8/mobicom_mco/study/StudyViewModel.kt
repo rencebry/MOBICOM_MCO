@@ -73,6 +73,18 @@ class StudyViewModel : ViewModel() {
                 name = "CSARCH1",
                 deckCount = 9,
                 colorResId = R.color.vinyl_mint
+            ),
+            Course(
+                id = UUID.randomUUID().toString(),
+                name = "STADVDB",
+                deckCount = 9,
+                colorResId = R.color.vinyl_mint
+            ),
+            Course(
+                id = UUID.randomUUID().toString(),
+                name = "CCPROG1",
+                deckCount = 9,
+                colorResId = R.color.vinyl_mint
             )
         )
     }
