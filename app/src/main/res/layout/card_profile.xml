@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:background="@drawable/bg_card">
+    android:background="@drawable/bg_card"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="24dp">
 
-    <!-- Avatar -->
+    <!-- The avatar image, now constrained to the start and top.
+         The top margin pushes it down below the colored header bar. -->
     <ImageView
         android:id="@+id/ivProfileAvatar"
-        android:layout_width="102dp"
-        android:layout_height="128dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="40dp"
         android:src="@drawable/ic_avatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Name label -->
+    <!-- GUIDELINES: These create our two columns for text alignment -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_left_column"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="124dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_right_column"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.65" />
+
+
+    <!-- ROW 1: Name and School -->
     <TextView
         android:id="@+id/tvNameLabel"
         android:layout_width="wrap_content"
@@ -23,11 +44,9 @@
         android:text="Name:"
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintStart_toEndOf="@id/ivProfileAvatar"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@id/guideline_left_column"
+        app:layout_constraintTop_toTopOf="@id/ivProfileAvatar" />
 
-    <!-- Name value -->
     <TextView
         android:id="@+id/tvNameValue"
         android:layout_width="0dp"
@@ -36,131 +55,78 @@
         android:textColor="@color/text_primary"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/tvNameLabel"
-        app:layout_constraintStart_toStartOf="@id/tvNameLabel"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_column"
+        app:layout_constraintTop_toBottomOf="@id/tvNameLabel" />
 
-    <!-- Horizontal Row: School + Birthday -->
-    <LinearLayout
-        android:id="@+id/llSchoolBirthday"
+    <TextView
+        android:id="@+id/tvSchoolLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="School:"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/guideline_right_column"
+        app:layout_constraintTop_toTopOf="@id/tvNameLabel" />
+
+    <TextView
+        android:id="@+id/tvSchoolValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/tvNameValue"
-        app:layout_constraintStart_toStartOf="@id/tvNameValue"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:text="DLSU-M"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_right_column"
+        app:layout_constraintTop_toBottomOf="@id/tvSchoolLabel" />
 
-        <!-- School Column -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="School:"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+    <!-- ROW 2: Course and Year Level -->
+    <TextView
+        android:id="@+id/tvCourseLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Course:"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_column"
+        app:layout_constraintTop_toBottomOf="@id/tvNameValue" />
 
-            <TextView
-                android:id="@+id/tvSchoolValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="DLSU-M"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Birthday Column -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Birthday:"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvBirthdayValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="06-04-2003"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Course and Year Level -->
-    <LinearLayout
-        android:id="@+id/llBottomInfo"
+    <TextView
+        android:id="@+id/tvCourseValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/llSchoolBirthday"
-        app:layout_constraintStart_toStartOf="@id/llSchoolBirthday"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:text="BSCS-ST"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_left_column"
+        app:layout_constraintTop_toBottomOf="@id/tvCourseLabel" />
 
-        <!-- Course -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:elevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Course:"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+    <TextView
+        android:id="@+id/tvYearLevelLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Year Level:"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/guideline_right_column"
+        app:layout_constraintTop_toTopOf="@id/tvCourseLabel" />
 
-            <TextView
-                android:id="@+id/tvCourseValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BSCS-ST"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- Year Level -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Year Level:"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvYearLevelValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="III"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvYearLevelValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="III"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guideline_right_column"
+        app:layout_constraintTop_toBottomOf="@id/tvYearLevelLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

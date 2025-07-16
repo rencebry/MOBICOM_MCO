@@ -37,11 +37,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/large_margin"
-        android:layout_marginTop="@dimen/large_margin"
+        android:layout_marginTop="308dp"
         android:layout_marginEnd="@dimen/large_margin"
         android:text="@string/create_an_account"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvAppName" />
 

@@ -74,7 +74,6 @@ class HomeFragment : Fragment() {
             tvNameValue.text = "Kyoka"
             tvSchoolValue.text = "DLSU-M"
             tvCourseValue.text = "BS CS-ST"
-            tvBirthdayValue.text = "06-04-2003"
             tvYearLevelValue.text = "III"
         }
 

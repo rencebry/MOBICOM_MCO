@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="#F3EADC" />
+    <!-- Layer 1: The Main Card Body (Bottom Layer) -->
+    <!-- This is the white, rounded rectangle that makes up most of the card. -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/white" />
+            <corners android:radius="16dp" />
+            <stroke android:width="1dp" android:color="#E0E0E0" /> <!-- Optional: a light border -->
+        </shape>
+    </item>
 
-    <stroke
-        android:width="1dp"
-        android:color="@color/black" />
+    <!-- Layer 2: The Colored Header Bar (Top Layer) -->
+    <!-- This rectangle will be drawn on top of the first layer. -->
+    <item
+        android:height="30dp"
+        android:gravity="top|fill_horizontal">
+        <shape android:shape="rectangle">
+            <!-- This color can be changed with a backgroundTint -->
+            <solid android:color="@color/vinyl_blue" />
 
-    <corners android:radius="12dp" />
-</shape>
+            <!-- We only round the top-left and top-right corners -->
+            <corners
+                android:topLeftRadius="16dp"
+                android:topRightRadius="16dp" />
+        </shape>
+    </item>
+
+</layer-list>
