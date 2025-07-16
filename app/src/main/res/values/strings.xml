@@ -99,4 +99,9 @@
     <!-- Playing Flashcards -->
     <string name="flashcard_favorite">Favorite this card</string>
     <string name="continue_with_google">Continue with Google</string>
+
+    <!-- Web client id -->
+    <string name="default_web_client_id">330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com</string>
+
+
 </resources>

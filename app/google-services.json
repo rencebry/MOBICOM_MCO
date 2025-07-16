@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "330230534714",
+    "project_id": "study-with-me-mobileapp",
+    "storage_bucket": "study-with-me-mobileapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330230534714:android:6bc091ebccd72ac7c31b03",
+        "android_client_info": {
+          "package_name": "com.mobicom.s17.group8.mobicom_mco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330230534714-t7g7kguv6mpbtpqr6b43at3etsqi7qtt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobicom.s17.group8.mobicom_mco",
+            "certificate_hash": "bc6d5bfc8ceacc165ca2c22aada9d26a05f3da91"
+          }
+        },
+        {
+          "client_id": "330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-hopjT1k1bHCzza8wlQ4Bzi_5dq8oMTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
