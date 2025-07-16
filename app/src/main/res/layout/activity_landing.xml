@@ -33,27 +33,44 @@
         app:layout_constraintVertical_bias="0.45" />
 
     <Button
-        android:id="@+id/btnCreateAccount"
+        android:id="@+id/btnGoogleSignIn"
+        app:icon="@drawable/google"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/large_margin"
-        android:layout_marginTop="308dp"
+        android:layout_marginTop="268dp"
         android:layout_marginEnd="@dimen/large_margin"
-        android:text="@string/create_an_account"
-        android:textColor="@color/white"
+        android:text="@string/continue_with_google"
+        android:textColor="@color/black"
+        app:iconTint="@null"
+        android:backgroundTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvAppName" />
 
     <Button
+        android:id="@+id/btnCreateAccount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/large_margin"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="@dimen/large_margin"
+        android:text="@string/create_an_account"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnGoogleSignIn" />
+
+    <Button
         android:id="@+id/btnLogin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:backgroundTint="@android:color/white"
         android:text="@string/log_in"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@id/btnCreateAccount"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/btnCreateAccount"

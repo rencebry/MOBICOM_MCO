@@ -98,4 +98,5 @@
 
     <!-- Playing Flashcards -->
     <string name="flashcard_favorite">Favorite this card</string>
+    <string name="continue_with_google">Continue with Google</string>
 </resources>
