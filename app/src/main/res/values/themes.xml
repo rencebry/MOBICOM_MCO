@@ -16,4 +16,9 @@
         <item name="cornerRadius">24dp</item>
     </style>
 
+    <style name="ShapeAppearance.App.CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20%</item>
+    </style>
+
 </resources>

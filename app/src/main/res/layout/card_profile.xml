@@ -9,8 +9,6 @@
     android:paddingEnd="16dp"
     android:paddingBottom="24dp">
 
-    <!-- The avatar image, now constrained to the start and top.
-         The top margin pushes it down below the colored header bar. -->
     <ImageView
         android:id="@+id/ivProfileAvatar"
         android:layout_width="100dp"
@@ -20,7 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- GUIDELINES: These create our two columns for text alignment -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_left_column"
         android:layout_width="wrap_content"

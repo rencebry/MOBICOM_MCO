@@ -24,6 +24,7 @@
 
         <activity android:name=".auth.LoginActivity" />
         <activity android:name=".auth.SignupActivity" />
+        <activity android:name=".auth.CreateProfileActivity" />
         <activity android:name=".main.MainActivity" />
 
 

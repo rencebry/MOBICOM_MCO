@@ -18,12 +18,15 @@ import com.google.firebase.ktx.Firebase
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityLandingBinding
 import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
+import com.google.firebase.firestore.ktx.firestore
+
 
 class LandingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLandingBinding
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
+    private val db = Firebase.firestore
 
     private val googleSignInLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -83,13 +86,42 @@ class LandingActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.d("LandingActivity", "signInWithCredential:success")
-                    navigateToMainApp()
+                    val user = auth.currentUser!!
+                    checkIfNewUserAndNavigate(user.uid)
                 } else {
                     Log.w("LandingActivity", "signInWithCredential:failure", task.exception)
                     showError("Firebase Authentication Failed.")
                 }
             }
+    }
+
+    private fun checkIfNewUserAndNavigate(userId: String) {
+        val userDocRef = db.collection("users").document(userId)
+
+        userDocRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    // User profile already exists, they are a returning user
+                    Log.d("LandingActivity", "Returning user, navigating to main app.")
+                    navigateToMainApp()
+                } else {
+                    // No profile found, this is a new user
+                    Log.d("LandingActivity", "New user, navigating to create profile.")
+                    navigateToCreateProfile()
+                }
+            }
+            .addOnFailureListener { e ->
+                // Handle the error, maybe default to creating a profile
+                Log.e("LandingActivity", "Error checking for user profile", e)
+                showError("Could not verify profile. Please try again.")
+            }
+    }
+
+    private fun navigateToCreateProfile() {
+        val intent = Intent(this, CreateProfileActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     private fun navigateToMainApp() {

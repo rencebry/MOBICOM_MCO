@@ -102,6 +102,8 @@
 
     <!-- Web client id -->
     <string name="default_web_client_id">330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com</string>
+    <string name="ex_you_email_com">Ex. you@email.com</string>
+    <string name="email">Email</string>
 
 
 </resources>

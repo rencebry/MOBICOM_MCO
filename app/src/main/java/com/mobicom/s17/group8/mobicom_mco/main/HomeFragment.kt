@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.R
@@ -18,7 +18,10 @@ import com.mobicom.s17.group8.mobicom_mco.todo.Task
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.bumptech.glide.Glide
+import com.google.firebase.firestore.ktx.firestore
 
 // --- local adapter since adding tasks are not yet implemented ---
 class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<HomeTaskAdapter.TaskViewHolder>() {
@@ -47,6 +50,9 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private val auth = Firebase.auth
+    private val db = Firebase.firestore
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,24 +64,16 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val userName = "Kyoka" // placehlder
-        binding.tvGreeting.text = getString(R.string.hello_user, userName) //placehlder
+        loadUserProfile()
         setDate()
 
         binding.ivSettings.setOnClickListener {
             showLogoutDialog()
         }
 
-        binding.btnStartStudying.setOnClickListener {
-            findNavController().navigate(R.id.nav_study)
-        }
-
-        binding.profileCard.apply {
-            tvNameValue.text = "Kyoka"
-            tvSchoolValue.text = "DLSU-M"
-            tvCourseValue.text = "BS CS-ST"
-            tvYearLevelValue.text = "III"
-        }
+//        binding.btnStartStudying.setOnClickListener {
+//            findNavController().navigate(R.id.nav_study)
+//        }
 
         val tasksForToday = getPlaceholderTasks()
         val homeTaskAdapter = HomeTaskAdapter(tasksForToday)
@@ -96,7 +94,56 @@ class HomeFragment : Fragment() {
 
         binding.tvDate.text = formattedDate
     }
+    private fun loadUserProfile() {
+        val user = auth.currentUser
+        if (user == null) {
+            // If for some reason there's no user
+            logoutUser()
+            return
+        }
 
+        // Get the user's document from the "users" collection in Firestore
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    // Document found, populate the UI
+                    val displayName = document.getString("displayName") ?: "User"
+                    val school = document.getString("school") ?: "N/A"
+                    val course = document.getString("course") ?: "N/A"
+                    val yearLevel = document.getLong("yearLevel")?.toString() ?: "N/A"
+                    val profilePictureUrl = document.getString("profilePictureUrl")
+
+                    // Set the greeting text
+                    binding.tvGreeting.text = getString(R.string.hello_user, displayName)
+
+                    // Set the profile card details
+                    binding.profileCard.apply {
+                        tvNameValue.text = displayName
+                        tvSchoolValue.text = school
+                        tvCourseValue.text = course
+                        tvYearLevelValue.text = yearLevel
+                    }
+
+                    // Load the profile image using Glide
+                    if (profilePictureUrl != null) {
+                        Glide.with(this@HomeFragment)
+                            .load(profilePictureUrl)
+                            .circleCrop() // Make the image a circle
+                            .placeholder(R.drawable.ic_add_photo) // Placeholder while loading
+                            .error(R.drawable.ic_add_photo) // Image to show if loading fails
+                            .into(binding.profileCard.ivProfileAvatar)
+                    }
+
+                } else {
+                    Log.d("HomeFragment", "No such document for user: ${user.uid}")
+                    // Todo: Handle case where profile doc is missing
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("HomeFragment", "get failed with ", exception)
+                // Todo: Show an error message
+            }
+    }
     private fun getDayOfMonthSuffix(n: Int): String {
         if (n in 11..13) {
             return "th"
@@ -131,13 +178,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun logoutUser() {
+        auth.signOut()
         // Intent to go back to the LandingActivity
         val intent = Intent(requireActivity(), LandingActivity::class.java).apply {
-            // clear the entire task stack
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         startActivity(intent)
-        requireActivity().finish()
+        requireActivity().finish() // Finish the MainActivity
     }
 
 
