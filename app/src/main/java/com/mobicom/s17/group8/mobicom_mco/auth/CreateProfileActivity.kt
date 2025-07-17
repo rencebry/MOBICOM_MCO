@@ -1,6 +1,5 @@
 package com.mobicom.s17.group8.mobicom_mco.auth
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,7 +11,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityCreateProfileBinding
 import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
 import java.util.UUID
@@ -49,7 +47,11 @@ class CreateProfileActivity : AppCompatActivity() {
 
         binding.btnCompleteProfile.setOnClickListener {
             if (validateInput()) {
-                uploadProfilePictureAndSaveData()
+                if (imageUri != null) {
+                    uploadProfilePictureAndSaveData()
+                } else {
+                    saveUserProfile(null)
+                }
             }
         }
     }
@@ -62,10 +64,10 @@ class CreateProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "All fields are required.", Toast.LENGTH_SHORT).show()
             return false
         }
-        if (imageUri == null) {
-            Toast.makeText(this, "Please select a profile picture.", Toast.LENGTH_SHORT).show()
-            return false
-        }
+//        if (imageUri == null) {
+//            Toast.makeText(this, "Please select a profile picture.", Toast.LENGTH_SHORT).show()
+//            return false
+//        }
         return true
     }
 
@@ -74,11 +76,11 @@ class CreateProfileActivity : AppCompatActivity() {
         val filename = UUID.randomUUID().toString()
         val storageRef = storage.reference.child("profile_pictures/$filename")
 
-        imageUri?.let {
-            storageRef.putFile(it)
+        imageUri?.let { uri ->
+            storageRef.putFile(uri)
                 .addOnSuccessListener {
-                    // Get the download URL
                     storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                        // After successful upload, save the profile with the new URL
                         saveUserProfile(downloadUrl.toString())
                     }
                 }
@@ -88,7 +90,7 @@ class CreateProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveUserProfile(profilePictureUrl: String) {
+    private fun saveUserProfile(profilePictureUrl: String?) {
         val user = auth.currentUser!!
 
         val userProfile = hashMapOf(
