@@ -17,15 +17,13 @@
 
         <Spinner
             android:id="@+id/spinnerTaskList"
-            android:layout_width="150dp"
-            android:layout_height="38dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="29dp"
             android:drawableEnd="@drawable/arrow_drop_down"
-            android:fontFamily="@font/bg"
             android:spinnerMode="dropdown"
             android:textAlignment="center"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/spinnerTaskTypeLl"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="3dp"
-            android:background="@color/vinyl_mint"
+            android:background="@color/color_1020G"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/spinnerViewOptionLl"
@@ -45,10 +43,9 @@
 
             <Spinner
                 android:id="@+id/spinnerTaskType"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableEnd="@drawable/arrow_drop_down"
-                android:fontFamily="@font/inter"
                 android:gravity="center"
                 android:spinnerMode="dropdown"
                 android:textAlignment="center" />
@@ -58,7 +55,7 @@
             android:id="@+id/spinnerViewOptionLl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="10dp"
             android:background="@color/color_1020Y50R"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -68,11 +65,10 @@
 
             <Spinner
                 android:id="@+id/spinnerViewOption"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/black"
                 android:drawableEnd="@drawable/arrow_drop_down"
-                android:fontFamily="@font/inter"
                 android:spinnerMode="dropdown"
                 android:textAlignment="center" />
         </LinearLayout>
@@ -95,9 +91,10 @@
         android:id="@+id/addTaskFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="24dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:clickable="true"
+        android:focusable="true"
         app:backgroundTint="@color/white"
         app:borderWidth="2dp"
         app:layout_constraintBottom_toBottomOf="parent"

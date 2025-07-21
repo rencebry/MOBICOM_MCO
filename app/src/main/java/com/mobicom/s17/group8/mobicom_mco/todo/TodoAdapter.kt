@@ -27,11 +27,11 @@ class TodoAdapter(
             //binding.taskDetails.text = task.details
             binding.taskCheckbox.isChecked = task.isCompleted
 
-            if (task.isStarred) {
-                binding.starredIv.visibility = android.view.View.VISIBLE
-            } else {
-                binding.starredIv.visibility = android.view.View.GONE
-            }
+//            if (task.isStarred) {
+//                binding.starredIv.visibility = android.view.View.VISIBLE
+//            } else {
+//                binding.starredIv.visibility = android.view.View.GONE
+//            }
             //binding.starredIv = task.isStarred
             binding.taskInfoTv.text = task.label +
                     when {
