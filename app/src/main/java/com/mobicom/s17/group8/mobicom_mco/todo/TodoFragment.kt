@@ -40,6 +40,7 @@ class TodoFragment : Fragment() {
 
     private fun setupSpinners() {
         // Data for the Spinners
+        // Task Lists need to be updated with actual task lists from the database or API
         val taskLists = listOf("My Task", "Work", "Personal", "MOBICOM")
         val taskTypes = arrayOf("Ongoing", "All", "Starred", "Missed", "Completed")
         val viewOptions = arrayOf("List", "Calendar")
@@ -47,7 +48,7 @@ class TodoFragment : Fragment() {
         // Adapter for Task List Spinner
         val taskListAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item_task_list,
             taskLists
         )
         taskListAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -56,7 +57,7 @@ class TodoFragment : Fragment() {
         // Adapter for Task Type Spinner
         val taskTypeAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item_default,
             taskTypes
         )
         taskTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -65,7 +66,7 @@ class TodoFragment : Fragment() {
         // Adapter for View Options Spinner
         val viewOptionsAdapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item_default,
             viewOptions
         )
         viewOptionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -88,11 +89,71 @@ class TodoFragment : Fragment() {
     // Sample data for the Todo list
     private fun getTodoData(): List<Task> {
         return listOf(
-            Task("Task Name 1", "Description for task 1", false, false, "06/28/25", "11:59PM", "My Task"),
-            Task("Task Name 2", "Description for task 2", true, false, "Date", "Time", "Label 1"),
-            Task("Task Name 3", "Description for task 3", false, true, "Date", "Time", "Label 2"),
-            Task("Task Name 4", "Description for task 4", true, true, "Date", "Time", "Label 1"),
-            Task("Task Name 5", "Description for task 5", false, false, "Date", "Time", "Label 1"),
+            Task(
+                "1",
+                "Task Name 1",
+                "timestamp",
+                "Description for task 1",
+                false,
+                "needsAction",
+                "06/28/25 11:59PM",
+                "06/28/25",
+                "11:59PM",
+                "My Task",
+                "timestamp"
+            ),
+            Task(
+                "2",
+                "Task Name 2",
+                "timestamp2",
+                "Description for task 2",
+                true,
+                "completed",
+                "06/29/25 10:00AM",
+                "06/29/25",
+                "10:00AM",
+                "Work",
+                "timestamp2"
+            ),
+            Task(
+                "3",
+                "Task Name 3",
+                "timestamp3",
+                "Description for task 3",
+                false,
+                "needsAction",
+                "06/30/25 09:30AM",
+                "06/30/25",
+                "09:30AM",
+                "Personal",
+                "timestamp3"
+            ),
+            Task(
+                "4",
+                "Task Name 4",
+                "timestamp4",
+                "Description for task 4",
+                true,
+                "completed",
+                "07/01/25 02:00PM",
+                "07/01/25",
+                "02:00PM",
+                "MOBICOM",
+                "timestamp4"
+            ),
+            Task(
+                "5",
+                "Task Name 5",
+                "timestamp5",
+                "Description for task 5",
+                false,
+                "needsAction",
+                "07/02/25 04:15PM",
+                "07/02/25",
+                "04:15PM",
+                "My Task",
+                "timestamp5"
+            )
         )
     }
 

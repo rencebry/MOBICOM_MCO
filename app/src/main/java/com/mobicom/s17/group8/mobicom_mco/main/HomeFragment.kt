@@ -1,5 +1,6 @@
 package com.mobicom.s17.group8.mobicom_mco.main
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -33,13 +34,14 @@ class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<Home
         return TaskViewHolder(binding)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
         holder.binding.apply {
             taskNameTv.text = task.name
             taskInfoTv.text = "${task.label} | ${task.dueDate}"
             taskCheckbox.isChecked = task.isCompleted
-            starredIv.visibility = if (task.isStarred) View.VISIBLE else View.GONE
+            //starredIv.visibility = if (task.isStarred) View.VISIBLE else View.GONE
         }
     }
 
@@ -171,9 +173,9 @@ class HomeFragment : Fragment() {
 
     private fun getPlaceholderTasks(): List<Task> {
         return listOf(
-            Task("Finals Exam", null, false, true, "June 28", null, "STCLOUD"),
-            Task("MCO Presentation", null, false, false, "June 30", null, "MOBICOM"),
-            Task("Review for Quiz 2", null, true, false, "July 02", null, "CSARCH2")
+            Task("1", "Finals Exam", "timestamp", null, false, "needsAction", "June 28", "June 28", null, "STCLOUD", "timestamp"),
+            Task("2", "MCO Presentation", "timestamp", null, false, "needsAction", "June 30", "June 30", null, "MOBICOM", "timestamp"),
+            Task("3", "Review for Quiz 2", "timestamp", null, false, "needsAction", "July 02", "July 02", null, "CSARCH2", "timestamp"),
         )
     }
 
