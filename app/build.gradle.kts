@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -58,5 +59,9 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.ui.auth)
     implementation(libs.glide)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx) // Kotlin extensions
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.kotlinx.coroutines.android)
 
 }

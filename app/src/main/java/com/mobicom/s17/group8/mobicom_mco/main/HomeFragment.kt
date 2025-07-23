@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.R
@@ -23,6 +24,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // --- local adapter since adding tasks are not yet implemented ---
 class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<HomeTaskAdapter.TaskViewHolder>() {
@@ -180,6 +184,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun logoutUser() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            AppDatabase.getDatabase(requireContext()).userDao().clearUser()
+        }
         auth.signOut()
         // Intent to go back to the LandingActivity
         val intent = Intent(requireActivity(), LandingActivity::class.java).apply {

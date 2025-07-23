@@ -7,12 +7,17 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.User
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityCreateProfileBinding
 import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class CreateProfileActivity : AppCompatActivity() {
@@ -92,6 +97,10 @@ class CreateProfileActivity : AppCompatActivity() {
 
     private fun saveUserProfile(profilePictureUrl: String?) {
         val user = auth.currentUser!!
+        val displayName = binding.etDisplayName.text.toString().trim()
+        val school = binding.etSchool.text.toString().trim()
+        val course = binding.etCourse.text.toString().trim()
+        val yearLevel = binding.etYearLevel.text.toString().trim().toIntOrNull()
 
         val userProfile = hashMapOf(
             "uid" to user.uid,
@@ -107,6 +116,20 @@ class CreateProfileActivity : AppCompatActivity() {
         db.collection("users").document(user.uid)
             .set(userProfile)
             .addOnSuccessListener {
+                val roomUser = User(
+                    uid = user.uid,
+                    email = user.email,
+                    displayName = displayName,
+                    school = school,
+                    course = course,
+                    yearLevel = yearLevel,
+                    profilePictureUrl = profilePictureUrl
+                )
+
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val userDao = AppDatabase.getDatabase(applicationContext).userDao()
+                    userDao.insertOrUpdateUser(roomUser)
+                }
                 Toast.makeText(this, "Profile created successfully!", Toast.LENGTH_SHORT).show()
                 navigateToMainApp()
             }
