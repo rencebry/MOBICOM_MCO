@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco.todo
+package com.mobicom.s17.group8.mobicom_mco.task
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobicom.s17.group8.mobicom_mco.R
+import com.mobicom.s17.group8.mobicom_mco.database.Task
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentTodoListBinding
 
 class TodoFragment : Fragment() {
@@ -75,7 +76,7 @@ class TodoFragment : Fragment() {
 
     // Set up the RecyclerView with the TodoAdapter
     private fun setupRecyclerView() {
-        // Initialize the task items with sample data
+        // TODO: Initialize the task items with data from Room database
         val taskItems = getTodoData()
 
         todoAdapter = TodoAdapter(taskItems)
@@ -90,69 +91,94 @@ class TodoFragment : Fragment() {
     private fun getTodoData(): List<Task> {
         return listOf(
             Task(
-                "1",
-                "Task Name 1",
-                "timestamp",
-                "Description for task 1",
-                false,
-                "needsAction",
-                "06/28/25 11:59PM",
-                "06/28/25",
-                "11:59PM",
-                "My Task",
-                "timestamp"
+                id = "1",
+                title = "Task Name 1",
+                status = "needsAction",
+                due = "2025-06-28T23:59:00Z",
+                notes = "Description for task 1",
+                updated = "2025-06-20T10:00:00Z",
+                completed = null,
+                parent = null,
+                position = "1",
+                tasklistId = "list1",
+                isSynced = false,
+                isDeleted = false,
+                isCompleted = false,
+                dueDate = "06/28/25",
+                dueTime = "11:59PM",
+                label = "My Task"
             ),
             Task(
-                "2",
-                "Task Name 2",
-                "timestamp2",
-                "Description for task 2",
-                true,
-                "completed",
-                "06/29/25 10:00AM",
-                "06/29/25",
-                "10:00AM",
-                "Work",
-                "timestamp2"
+                id = "2",
+                title = "Task Name 2",
+                status = "completed",
+                due = "2025-06-29T10:00:00Z",
+                notes = "Description for task 2",
+                updated = "2025-06-21T11:00:00Z",
+                completed = "2025-06-29T10:00:00Z",
+                parent = null,
+                position = "2",
+                tasklistId = "list2",
+                isSynced = true,
+                isDeleted = false,
+                isCompleted = true,
+                dueDate = "06/29/25",
+                dueTime = "10:00AM",
+                label = "Work"
             ),
             Task(
-                "3",
-                "Task Name 3",
-                "timestamp3",
-                "Description for task 3",
-                false,
-                "needsAction",
-                "06/30/25 09:30AM",
-                "06/30/25",
-                "09:30AM",
-                "Personal",
-                "timestamp3"
+                id = "3",
+                title = "Task Name 3",
+                status = "needsAction",
+                due = "2025-06-30T09:30:00Z",
+                notes = "Description for task 3",
+                updated = "2025-06-22T12:00:00Z",
+                completed = null,
+                parent = null,
+                position = "3",
+                tasklistId = "list3",
+                isSynced = false,
+                isDeleted = false,
+                isCompleted = false,
+                dueDate = "06/30/25",
+                dueTime = "09:30AM",
+                label = "Personal"
             ),
             Task(
-                "4",
-                "Task Name 4",
-                "timestamp4",
-                "Description for task 4",
-                true,
-                "completed",
-                "07/01/25 02:00PM",
-                "07/01/25",
-                "02:00PM",
-                "MOBICOM",
-                "timestamp4"
+                id = "4",
+                title = "Task Name 4",
+                status = "completed",
+                due = "2025-07-01T14:00:00Z",
+                notes = "Description for task 4",
+                updated = "2025-06-23T13:00:00Z",
+                completed = "2025-07-01T14:00:00Z",
+                parent = null,
+                position = "4",
+                tasklistId = "list4",
+                isSynced = true,
+                isDeleted = false,
+                isCompleted = true,
+                dueDate = "07/01/25",
+                dueTime = "02:00PM",
+                label = "MOBICOM"
             ),
             Task(
-                "5",
-                "Task Name 5",
-                "timestamp5",
-                "Description for task 5",
-                false,
-                "needsAction",
-                "07/02/25 04:15PM",
-                "07/02/25",
-                "04:15PM",
-                "My Task",
-                "timestamp5"
+                id = "5",
+                title = "Task Name 5",
+                status = "needsAction",
+                due = "2025-07-02T16:15:00Z",
+                notes = "Description for task 5",
+                updated = "2025-06-24T14:00:00Z",
+                completed = null,
+                parent = null,
+                position = "5",
+                tasklistId = "list1",
+                isSynced = false,
+                isDeleted = false,
+                isCompleted = false,
+                dueDate = "07/02/25",
+                dueTime = "04:15PM",
+                label = "My Task"
             )
         )
     }
