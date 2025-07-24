@@ -12,7 +12,6 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:background="@color/white"
-        android:contentDescription="return button"
         android:scaleX="2"
         android:scaleY="2"
         android:src="@drawable/chevron_arrow_down"
@@ -109,20 +108,21 @@
         android:id="@+id/taskLabelTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_marginTop="15dp"
         android:layout_marginBottom="7dp"
         android:font="@font/bg"
         android:text="@string/label"
         android:textColor="@color/text_primary"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/taskListSpinner"
+        app:layout_constraintBottom_toTopOf="@+id/taskLabelEtv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.077"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/taskDetailsEtv" />
 
-    <Spinner
-        android:id="@+id/taskListSpinner"
+    <EditText
+        android:id="@+id/taskLabelEtv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -130,7 +130,9 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="5dp"
         android:background="@drawable/edittext_background"
-        android:padding="10dp"
+        android:hint="@string/label_hint"
+        android:inputType="text"
+        android:padding="14dp"
         app:layout_constraintBottom_toTopOf="@+id/dueDateSwitch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -152,7 +154,7 @@
         app:layout_constraintEnd_toStartOf="@+id/dueDateSwitch"
         app:layout_constraintHorizontal_bias="0.076"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskListSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/taskLabelEtv" />
 
     <Switch
         android:id="@+id/dueDateSwitch"
@@ -167,7 +169,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/setDueDateTv"
-        app:layout_constraintTop_toBottomOf="@+id/taskListSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/taskLabelEtv" />
 
     <EditText
         android:id="@+id/editDueDate"

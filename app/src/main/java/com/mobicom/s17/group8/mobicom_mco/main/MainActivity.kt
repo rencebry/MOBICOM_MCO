@@ -8,7 +8,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.mobicom.s17.group8.mobicom_mco.R
 import androidx.lifecycle.ViewModelProvider
-import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityMainBinding
 import com.mobicom.s17.group8.mobicom_mco.music.MusicSharedViewModel
 
@@ -18,9 +17,6 @@ class MainActivity : AppCompatActivity() {
     private val sharedViewModel: MusicSharedViewModel by lazy {
         ViewModelProvider(this).get(MusicSharedViewModel::class.java)
     }
-
-    lateinit var database : AppDatabase private set
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)

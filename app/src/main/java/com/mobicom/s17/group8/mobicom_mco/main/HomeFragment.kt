@@ -16,7 +16,7 @@ import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.auth.LandingActivity
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentHomeBinding
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
-import com.mobicom.s17.group8.mobicom_mco.database.Task
+import com.mobicom.s17.group8.mobicom_mco.todo.Task
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -42,7 +42,7 @@ class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<Home
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
         holder.binding.apply {
-            taskNameTv.text = task.title
+            taskNameTv.text = task.name
             taskInfoTv.text = "${task.label} | ${task.dueDate}"
             taskCheckbox.isChecked = task.isCompleted
             //starredIv.visibility = if (task.isStarred) View.VISIBLE else View.GONE
@@ -177,60 +177,9 @@ class HomeFragment : Fragment() {
 
     private fun getPlaceholderTasks(): List<Task> {
         return listOf(
-            Task(
-                id = "1",
-                title = "Finals Exam",
-                status = "needsAction",
-                due = "2025-06-28T09:00:00Z",
-                notes = "Study all chapters for finals.",
-                updated = "2025-06-20T10:00:00Z",
-                completed = null,
-                parent = null,
-                position = "1",
-                tasklistId = "STCLOUD",
-                isSynced = false,
-                isDeleted = false,
-                isCompleted = false,
-                dueDate = "06/28/25",
-                dueTime = "09:00AM",
-                label = "STCLOUD"
-            ),
-            Task(
-                id = "2",
-                title = "MCO Presentation",
-                status = "needsAction",
-                due = "2025-06-30T14:00:00Z",
-                notes = "Prepare slides for MCO.",
-                updated = "2025-06-21T11:00:00Z",
-                completed = null,
-                parent = null,
-                position = "2",
-                tasklistId = "MOBICOM",
-                isSynced = false,
-                isDeleted = false,
-                isCompleted = false,
-                dueDate = "06/30/25",
-                dueTime = "02:00PM",
-                label = "MOBICOM"
-            ),
-            Task(
-                id = "3",
-                title = "Review for Quiz 2",
-                status = "needsAction",
-                due = "2025-07-02T08:00:00Z",
-                notes = "Focus on chapters 5-7.",
-                updated = "2025-06-22T12:00:00Z",
-                completed = null,
-                parent = null,
-                position = "3",
-                tasklistId = "CSARCH2",
-                isSynced = false,
-                isDeleted = false,
-                isCompleted = false,
-                dueDate = "07/02/25",
-                dueTime = "08:00AM",
-                label = "CSARCH2"
-            )
+            Task("1", "Finals Exam", "timestamp", null, false, "needsAction", "June 28", "June 28", null, "STCLOUD", "timestamp"),
+            Task("2", "MCO Presentation", "timestamp", null, false, "needsAction", "June 30", "June 30", null, "MOBICOM", "timestamp"),
+            Task("3", "Review for Quiz 2", "timestamp", null, false, "needsAction", "July 02", "July 02", null, "CSARCH2", "timestamp"),
         )
     }
 
