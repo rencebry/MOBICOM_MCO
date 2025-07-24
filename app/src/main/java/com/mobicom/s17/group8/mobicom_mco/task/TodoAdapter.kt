@@ -1,10 +1,10 @@
-package com.mobicom.s17.group8.mobicom_mco.todo
+package com.mobicom.s17.group8.mobicom_mco.task
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.mobicom.s17.group8.mobicom_mco.database.Task
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
 
 class TodoAdapter(
@@ -23,7 +23,7 @@ class TodoAdapter(
         // This class will hold references to the views for each todo item
         @SuppressLint("SetTextI18n")
         fun bindData(task : Task) {
-            binding.taskNameTv.text = task.name
+            binding.taskNameTv.text = task.title
             //binding.taskDetails.text = task.details
             binding.taskCheckbox.isChecked = task.isCompleted
 

@@ -26,7 +26,7 @@
 <!-- fragments for to-do   -->
     <fragment
         android:id="@+id/nav_todo"
-        android:name="com.mobicom.s17.group8.mobicom_mco.todo.TodoFragment"
+        android:name="com.mobicom.s17.group8.mobicom_mco.task.TodoFragment"
         android:label="fragment_todo"
         tools:layout="@layout/fragment_todo_list">
 
@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/new_task_fragment"
-        android:name="com.mobicom.s17.group8.mobicom_mco.todo.NewTaskFragment"
+        android:name="com.mobicom.s17.group8.mobicom_mco.task.NewTaskFragment"
         android:label="fragment_new_task"
         tools:layout="@layout/fragment_new_task" />
 
