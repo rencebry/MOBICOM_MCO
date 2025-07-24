@@ -13,7 +13,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
-import com.mobicom.s17.group8.mobicom_mco.database.User
+import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityCreateProfileBinding
 import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
 import kotlinx.coroutines.Dispatchers

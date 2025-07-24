@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.user.User
+import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
 
 @Database(entities = [User::class, Task::class, TaskList::class],
     version = 1,

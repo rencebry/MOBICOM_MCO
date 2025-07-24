@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco.database
+package com.mobicom.s17.group8.mobicom_mco.database.user
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

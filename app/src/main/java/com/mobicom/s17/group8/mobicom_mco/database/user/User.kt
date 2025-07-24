@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco.database // A new package for database files is good practice
+package com.mobicom.s17.group8.mobicom_mco.database.user // A new package for database files is good practice
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
