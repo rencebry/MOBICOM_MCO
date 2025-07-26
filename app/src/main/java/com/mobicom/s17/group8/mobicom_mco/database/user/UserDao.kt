@@ -17,7 +17,6 @@ interface UserDao {
     @Query("SELECT * FROM user_profile WHERE uid = :uid")
     fun getUserById(uid: String): LiveData<User>
 
-    // Clear all user data from the table (useful for logout).
-    @Query("DELETE FROM user_profile")
-    suspend fun clearUser()
+    @Query("SELECT * FROM user_profile WHERE uid = :uid")
+    suspend fun getNonLiveUserById(uid: String): User?
 }

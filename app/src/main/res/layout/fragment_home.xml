@@ -56,8 +56,7 @@
         android:textColor="#616161"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/topBarContainer"
-        tools:text="June 13th" />
+        app:layout_constraintTop_toBottomOf="@id/topBarContainer" />
 
     <TextView
         android:id="@+id/tvGreeting"
@@ -68,8 +67,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@id/tvDate"
-        app:layout_constraintTop_toBottomOf="@id/tvDate"
-        tools:text="Hello, Kyoka!" />
+        app:layout_constraintTop_toBottomOf="@id/tvDate" />
 
     <include
         android:id="@+id/profileCard"

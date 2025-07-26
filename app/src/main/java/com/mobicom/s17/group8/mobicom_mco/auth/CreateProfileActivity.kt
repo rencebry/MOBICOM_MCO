@@ -3,6 +3,7 @@ package com.mobicom.s17.group8.mobicom_mco.auth
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +19,9 @@ import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityCreateProfileBindi
 import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 import java.util.UUID
 
 class CreateProfileActivity : AppCompatActivity() {
@@ -52,11 +56,7 @@ class CreateProfileActivity : AppCompatActivity() {
 
         binding.btnCompleteProfile.setOnClickListener {
             if (validateInput()) {
-                if (imageUri != null) {
-                    uploadProfilePictureAndSaveData()
-                } else {
-                    saveUserProfile(null)
-                }
+                saveUserProfile()
             }
         }
     }
@@ -69,73 +69,79 @@ class CreateProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "All fields are required.", Toast.LENGTH_SHORT).show()
             return false
         }
-//        if (imageUri == null) {
-//            Toast.makeText(this, "Please select a profile picture.", Toast.LENGTH_SHORT).show()
-//            return false
-//        }
         return true
     }
 
-    private fun uploadProfilePictureAndSaveData() {
+    private fun saveUserProfile() {
         val user = auth.currentUser ?: return
-        val filename = UUID.randomUUID().toString()
-        val storageRef = storage.reference.child("profile_pictures/$filename")
 
-        imageUri?.let { uri ->
-            storageRef.putFile(uri)
+        // launches a coroutine for the entire save process
+        lifecycleScope.launch(Dispatchers.IO) {
+            var localImageUriString: String? = null
+
+            // Copy image to internal storage
+            if (imageUri != null) {
+                try {
+                    val inputStream = contentResolver.openInputStream(imageUri!!)
+                    // Create a file in the app's private directory
+                    val file = File(filesDir, "${user.uid}_profile.jpg")
+                    val outputStream = FileOutputStream(file)
+                    inputStream?.copyTo(outputStream)
+                    inputStream?.close()
+                    outputStream.close()
+                    // Get a permanent URI for our new local file
+                    localImageUriString = Uri.fromFile(file).toString()
+                    Log.d("CreateProfileActivity", "Image saved locally to: $localImageUriString")
+                } catch (e: Exception) {
+                    Log.e("CreateProfileActivity", "Failed to save image locally", e)
+                    // Continue without an image if saving fails
+                }
+            }
+
+            // SAVE TO FIRESTORE (without image URL) ---
+            val firestoreProfile = hashMapOf(
+                "uid" to user.uid,
+                "email" to user.email,
+                "displayName" to binding.etDisplayName.text.toString().trim(),
+                "school" to binding.etSchool.text.toString().trim(),
+                "course" to binding.etCourse.text.toString().trim(),
+                "yearLevel" to binding.etYearLevel.text.toString().trim().toIntOrNull(),
+                // We no longer save a URL to Firestore
+                "createdAt" to System.currentTimeMillis()
+            )
+
+            db.collection("users").document(user.uid).set(firestoreProfile)
                 .addOnSuccessListener {
-                    storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                        // After successful upload, save the profile with the new URL
-                        saveUserProfile(downloadUrl.toString())
+                    // This listener is now on the main thread, so we launch another coroutine for Room
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        // --- SAVE TO ROOM (with local image URI) ---
+                        val roomUser = User(
+                            uid = user.uid,
+                            email = user.email,
+                            displayName = binding.etDisplayName.text.toString().trim(),
+                            school = binding.etSchool.text.toString().trim(),
+                            course = binding.etCourse.text.toString().trim(),
+                            yearLevel = binding.etYearLevel.text.toString().trim().toIntOrNull(),
+                            localProfilePictureUri = localImageUriString // Save the local URI here
+                        )
+
+                        val userDao = AppDatabase.getDatabase(applicationContext).userDao()
+                        userDao.insertOrUpdateUser(roomUser)
+
+                        // Switch back to the main thread to navigate
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@CreateProfileActivity, "Profile created successfully!", Toast.LENGTH_SHORT).show()
+                            navigateToMainApp()
+                        }
                     }
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Image upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                    // Switch back to main thread to show Toast
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        Toast.makeText(this@CreateProfileActivity, "Failed to create profile: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
         }
-    }
-
-    private fun saveUserProfile(profilePictureUrl: String?) {
-        val user = auth.currentUser!!
-        val displayName = binding.etDisplayName.text.toString().trim()
-        val school = binding.etSchool.text.toString().trim()
-        val course = binding.etCourse.text.toString().trim()
-        val yearLevel = binding.etYearLevel.text.toString().trim().toIntOrNull()
-
-        val userProfile = hashMapOf(
-            "uid" to user.uid,
-            "email" to user.email,
-            "displayName" to binding.etDisplayName.text.toString().trim(),
-            "school" to binding.etSchool.text.toString().trim(),
-            "course" to binding.etCourse.text.toString().trim(),
-            "yearLevel" to binding.etYearLevel.text.toString().trim().toInt(),
-            "profilePictureUrl" to profilePictureUrl,
-            "createdAt" to System.currentTimeMillis()
-        )
-
-        db.collection("users").document(user.uid)
-            .set(userProfile)
-            .addOnSuccessListener {
-                val roomUser = User(
-                    uid = user.uid,
-                    email = user.email,
-                    displayName = displayName,
-                    school = school,
-                    course = course,
-                    yearLevel = yearLevel,
-                    profilePictureUrl = profilePictureUrl
-                )
-
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val userDao = AppDatabase.getDatabase(applicationContext).userDao()
-                    userDao.insertOrUpdateUser(roomUser)
-                }
-                Toast.makeText(this, "Profile created successfully!", Toast.LENGTH_SHORT).show()
-                navigateToMainApp()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed to create profile: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
     }
 
     private fun navigateToMainApp() {

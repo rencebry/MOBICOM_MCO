@@ -11,5 +11,5 @@ data class User(
     val school: String?,
     val course: String?,
     val yearLevel: Int?,
-    val profilePictureUrl: String?
+    val localProfilePictureUri: String?
 )

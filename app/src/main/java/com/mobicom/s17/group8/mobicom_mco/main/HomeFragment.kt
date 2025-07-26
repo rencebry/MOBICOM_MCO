@@ -3,6 +3,7 @@ package com.mobicom.s17.group8.mobicom_mco.main
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
+import com.mobicom.s17.group8.mobicom_mco.database.user.User
+import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
 
 // --- local adapter since adding tasks are not yet implemented ---
 class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<HomeTaskAdapter.TaskViewHolder>() {
@@ -58,19 +62,20 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private val auth = Firebase.auth
     private val db = Firebase.firestore
-
+    private lateinit var userDao: UserDao
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        userDao = AppDatabase.getDatabase(requireContext()).userDao()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadUserProfile()
+        loadAndObserveUserProfile()
         setDate()
 
         binding.ivSettings.setOnClickListener {
@@ -100,55 +105,71 @@ class HomeFragment : Fragment() {
 
         binding.tvDate.text = formattedDate
     }
-    private fun loadUserProfile() {
-        val user = auth.currentUser
-        if (user == null) {
-            // If for some reason there's no user
+    private fun loadAndObserveUserProfile() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
             logoutUser()
             return
         }
 
-        // Get the user's document from the "users" collection in Firestore
-        db.collection("users").document(user.uid).get()
+        // --- Step 1: Fetch the latest profile from Firestore ---
+        db.collection("users").document(currentUser.uid).get()
             .addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    // Document found, populate the UI
-                    val displayName = document.getString("displayName") ?: "User"
-                    val school = document.getString("school") ?: "N/A"
-                    val course = document.getString("course") ?: "N/A"
-                    val yearLevel = document.getLong("yearLevel")?.toString() ?: "N/A"
-                    val profilePictureUrl = document.getString("profilePictureUrl")
+                    // We got fresh data from the cloud
+                    val displayName = document.getString("displayName")
+                    val school = document.getString("school")
+                    val course = document.getString("course")
+                    val yearLevel = document.getLong("yearLevel")?.toInt()
 
-                    // Set the greeting text
-                    binding.tvGreeting.text = getString(R.string.hello_user, displayName)
+                    // --- Step 2: Update our local Room database with this fresh data ---
+                    // Note: We don't get the image URI from Firestore. We will read it from Room.
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val existingUser = userDao.getNonLiveUserById(currentUser.uid) // We need a non-live version for this
 
-                    // Set the profile card details
-                    binding.profileCard.apply {
-                        tvNameValue.text = displayName
-                        tvSchoolValue.text = school
-                        tvCourseValue.text = course
-                        tvYearLevelValue.text = yearLevel
+                        val updatedUser = User(
+                            uid = currentUser.uid,
+                            email = currentUser.email,
+                            displayName = displayName,
+                            school = school,
+                            course = course,
+                            yearLevel = yearLevel,
+                            // IMPORTANT: Preserve the existing local image URI if it exists
+                            localProfilePictureUri = existingUser?.localProfilePictureUri
+                        )
+                        userDao.insertOrUpdateUser(updatedUser)
                     }
-
-                    // Load the profile image using Glide
-                    if (profilePictureUrl != null) {
-                        Glide.with(this@HomeFragment)
-                            .load(profilePictureUrl)
-                            .circleCrop() // Make the image a circle
-                            .placeholder(R.drawable.ic_add_photo) // Placeholder while loading
-                            .error(R.drawable.ic_add_photo) // Image to show if loading fails
-                            .into(binding.profileCard.ivProfileAvatar)
-                    }
-
                 } else {
-                    Log.d("HomeFragment", "No such document for user: ${user.uid}")
-                    // Todo: Handle case where profile doc is missing
+                    Log.d("HomeFragment", "No Firestore document for user, might be an error state.")
                 }
             }
             .addOnFailureListener { exception ->
-                Log.d("HomeFragment", "get failed with ", exception)
-                // Todo: Show an error message
+                Log.w("HomeFragment", "Error getting documents: ", exception)
             }
+
+        // --- Step 3: Observe the Room database for any changes (local or from Firestore sync) ---
+        userDao.getUserById(currentUser.uid).observe(viewLifecycleOwner) { userEntity ->
+            if (userEntity != null) {
+                // The UI is ALWAYS driven by the local Room database
+                binding.tvGreeting.text = getString(R.string.hello_user, userEntity.displayName ?: "User")
+
+                binding.profileCard.apply {
+                    tvNameValue.text = userEntity.displayName ?: "N/A"
+                    tvSchoolValue.text = userEntity.school ?: "N/A"
+                    tvCourseValue.text = userEntity.course ?: "N/A"
+                    tvYearLevelValue.text = userEntity.yearLevel?.toString() ?: "N/A"
+                }
+
+                if (userEntity.localProfilePictureUri != null) {
+                    Glide.with(this@HomeFragment)
+                        .load(userEntity.localProfilePictureUri.toUri())
+                        .placeholder(R.drawable.ic_add_photo)
+                        .into(binding.profileCard.ivProfileAvatar)
+                } else {
+                    binding.profileCard.ivProfileAvatar.setImageResource(R.drawable.ic_add_photo)
+                }
+            }
+        }
     }
     private fun getDayOfMonthSuffix(n: Int): String {
         if (n in 11..13) {
@@ -235,9 +256,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun logoutUser() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            AppDatabase.getDatabase(requireContext()).userDao().clearUser()
-        }
         auth.signOut()
         // Intent to go back to the LandingActivity
         val intent = Intent(requireActivity(), LandingActivity::class.java).apply {
