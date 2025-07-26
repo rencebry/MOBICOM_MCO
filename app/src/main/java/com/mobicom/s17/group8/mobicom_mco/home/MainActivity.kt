@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco.main
+package com.mobicom.s17.group8.mobicom_mco.home
 
 import android.os.Bundle
 import android.view.View

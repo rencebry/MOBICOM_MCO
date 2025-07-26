@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco.main
+package com.mobicom.s17.group8.mobicom_mco.home
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -31,6 +31,10 @@ import kotlinx.coroutines.launch
 import androidx.core.net.toUri
 import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
+import android.widget.PopupMenu
+import com.bumptech.glide.signature.ObjectKey
+import com.mobicom.s17.group8.mobicom_mco.home.EditProfileActivity
+import java.io.File
 
 // --- local adapter since adding tasks are not yet implemented ---
 class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<HomeTaskAdapter.TaskViewHolder>() {
@@ -78,8 +82,8 @@ class HomeFragment : Fragment() {
         loadAndObserveUserProfile()
         setDate()
 
-        binding.ivSettings.setOnClickListener {
-            showLogoutDialog()
+        binding.ivSettings.setOnClickListener { view ->
+            showSettingsMenu(view) // Pass the settings icon view itself
         }
 
 //        binding.btnStartStudying.setOnClickListener {
@@ -94,6 +98,71 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun loadAndObserveUserProfile() {
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            logoutUser() // Should not happen, but safe to check
+            return
+        }
+
+        userDao.getUserById(currentUser.uid).observe(viewLifecycleOwner) { userEntity ->
+            if (userEntity != null) {
+                binding.tvGreeting.text = getString(R.string.hello_user, userEntity.displayName ?: "User")
+
+                binding.profileCard.apply {
+                    tvNameValue.text = userEntity.displayName ?: "N/A"
+                    tvSchoolValue.text = userEntity.school ?: "N/A"
+                    tvCourseValue.text = userEntity.course ?: "N/A"
+                    tvYearLevelValue.text = userEntity.yearLevel?.toString() ?: "N/A"
+                }
+
+                // Load the profile picture from the local URI
+                if (userEntity.localProfilePictureUri != null) {
+                    val imageUri = userEntity.localProfilePictureUri.toUri()
+                    val imageFile = imageUri.path?.let { File(it) }
+
+                    if (imageFile != null && imageFile.exists()) {
+                        Glide.with(this@HomeFragment)
+                            .load(imageUri)
+                            .signature(ObjectKey(imageFile.lastModified()))
+                            .placeholder(R.drawable.ic_add_photo)
+                            .error(R.drawable.ic_add_photo)
+                            .into(binding.profileCard.ivProfileAvatar)
+                    } else {
+                        binding.profileCard.ivProfileAvatar.setImageResource(R.drawable.ic_add_photo)
+                    }
+                } else {
+                    binding.profileCard.ivProfileAvatar.setImageResource(R.drawable.ic_add_photo)
+                }
+            }
+        }
+
+        db.collection("users").document(currentUser.uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val existingUser = userDao.getNonLiveUserById(currentUser.uid)
+
+                        val updatedUser = User(
+                            uid = currentUser.uid,
+                            email = currentUser.email,
+                            displayName = document.getString("displayName"),
+                            school = document.getString("school"),
+                            course = document.getString("course"),
+                            yearLevel = document.getLong("yearLevel")?.toInt(),
+                            localProfilePictureUri = existingUser?.localProfilePictureUri
+                        )
+                        userDao.insertOrUpdateUser(updatedUser)
+                    }
+                } else {
+                    Log.d("HomeFragment", "No Firestore document for user: ${currentUser.uid}")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.w("HomeFragment", "Error getting documents: ", exception)
+            }
+    }
+
     private fun setDate() {
         val monthDayFormat = SimpleDateFormat("MMMM d", Locale.getDefault())
         val date = Date()
@@ -105,72 +174,7 @@ class HomeFragment : Fragment() {
 
         binding.tvDate.text = formattedDate
     }
-    private fun loadAndObserveUserProfile() {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            logoutUser()
-            return
-        }
 
-        // --- Step 1: Fetch the latest profile from Firestore ---
-        db.collection("users").document(currentUser.uid).get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    // We got fresh data from the cloud
-                    val displayName = document.getString("displayName")
-                    val school = document.getString("school")
-                    val course = document.getString("course")
-                    val yearLevel = document.getLong("yearLevel")?.toInt()
-
-                    // --- Step 2: Update our local Room database with this fresh data ---
-                    // Note: We don't get the image URI from Firestore. We will read it from Room.
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val existingUser = userDao.getNonLiveUserById(currentUser.uid) // We need a non-live version for this
-
-                        val updatedUser = User(
-                            uid = currentUser.uid,
-                            email = currentUser.email,
-                            displayName = displayName,
-                            school = school,
-                            course = course,
-                            yearLevel = yearLevel,
-                            // IMPORTANT: Preserve the existing local image URI if it exists
-                            localProfilePictureUri = existingUser?.localProfilePictureUri
-                        )
-                        userDao.insertOrUpdateUser(updatedUser)
-                    }
-                } else {
-                    Log.d("HomeFragment", "No Firestore document for user, might be an error state.")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w("HomeFragment", "Error getting documents: ", exception)
-            }
-
-        // --- Step 3: Observe the Room database for any changes (local or from Firestore sync) ---
-        userDao.getUserById(currentUser.uid).observe(viewLifecycleOwner) { userEntity ->
-            if (userEntity != null) {
-                // The UI is ALWAYS driven by the local Room database
-                binding.tvGreeting.text = getString(R.string.hello_user, userEntity.displayName ?: "User")
-
-                binding.profileCard.apply {
-                    tvNameValue.text = userEntity.displayName ?: "N/A"
-                    tvSchoolValue.text = userEntity.school ?: "N/A"
-                    tvCourseValue.text = userEntity.course ?: "N/A"
-                    tvYearLevelValue.text = userEntity.yearLevel?.toString() ?: "N/A"
-                }
-
-                if (userEntity.localProfilePictureUri != null) {
-                    Glide.with(this@HomeFragment)
-                        .load(userEntity.localProfilePictureUri.toUri())
-                        .placeholder(R.drawable.ic_add_photo)
-                        .into(binding.profileCard.ivProfileAvatar)
-                } else {
-                    binding.profileCard.ivProfileAvatar.setImageResource(R.drawable.ic_add_photo)
-                }
-            }
-        }
-    }
     private fun getDayOfMonthSuffix(n: Int): String {
         if (n in 11..13) {
             return "th"
@@ -255,6 +259,27 @@ class HomeFragment : Fragment() {
         )
     }
 
+    private fun showSettingsMenu(anchorView: View) {
+        val popup = PopupMenu(requireContext(), anchorView)
+        popup.menuInflater.inflate(R.menu.home_settings_menu, popup.menu)
+
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_edit_profile -> {
+                    val intent = Intent(requireActivity(), EditProfileActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.action_logout -> {
+                    showLogoutDialog()
+                    true
+                }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
     private fun logoutUser() {
         auth.signOut()
         // Intent to go back to the LandingActivity
@@ -264,7 +289,6 @@ class HomeFragment : Fragment() {
         startActivity(intent)
         requireActivity().finish() // Finish the MainActivity
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -17,6 +17,9 @@ interface UserDao {
     @Query("SELECT * FROM user_profile WHERE uid = :uid")
     fun getUserById(uid: String): LiveData<User>
 
+    @Query("SELECT * FROM user_profile WHERE uid = :uid LIMIT 1")
+    suspend fun getSingleUserById(uid: String): User?
+
     @Query("SELECT * FROM user_profile WHERE uid = :uid")
     suspend fun getNonLiveUserById(uid: String): User?
 }

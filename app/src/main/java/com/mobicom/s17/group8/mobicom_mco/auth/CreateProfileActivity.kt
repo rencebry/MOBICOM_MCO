@@ -16,13 +16,12 @@ import com.google.firebase.storage.ktx.storage
 import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
 import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityCreateProfileBinding
-import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
+import com.mobicom.s17.group8.mobicom_mco.home.MainActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.util.UUID
 
 class CreateProfileActivity : AppCompatActivity() {
 
@@ -32,7 +31,6 @@ class CreateProfileActivity : AppCompatActivity() {
     private val storage = Firebase.storage
     private var imageUri: Uri? = null
 
-    // Launcher for getting an image from the gallery
     private val pickImageLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
@@ -94,11 +92,9 @@ class CreateProfileActivity : AppCompatActivity() {
                     Log.d("CreateProfileActivity", "Image saved locally to: $localImageUriString")
                 } catch (e: Exception) {
                     Log.e("CreateProfileActivity", "Failed to save image locally", e)
-                    // Continue without an image if saving fails
                 }
             }
 
-            // SAVE TO FIRESTORE (without image URL) ---
             val firestoreProfile = hashMapOf(
                 "uid" to user.uid,
                 "email" to user.email,
@@ -106,15 +102,12 @@ class CreateProfileActivity : AppCompatActivity() {
                 "school" to binding.etSchool.text.toString().trim(),
                 "course" to binding.etCourse.text.toString().trim(),
                 "yearLevel" to binding.etYearLevel.text.toString().trim().toIntOrNull(),
-                // We no longer save a URL to Firestore
                 "createdAt" to System.currentTimeMillis()
             )
 
             db.collection("users").document(user.uid).set(firestoreProfile)
                 .addOnSuccessListener {
-                    // This listener is now on the main thread, so we launch another coroutine for Room
                     lifecycleScope.launch(Dispatchers.IO) {
-                        // --- SAVE TO ROOM (with local image URI) ---
                         val roomUser = User(
                             uid = user.uid,
                             email = user.email,
@@ -128,7 +121,6 @@ class CreateProfileActivity : AppCompatActivity() {
                         val userDao = AppDatabase.getDatabase(applicationContext).userDao()
                         userDao.insertOrUpdateUser(roomUser)
 
-                        // Switch back to the main thread to navigate
                         withContext(Dispatchers.Main) {
                             Toast.makeText(this@CreateProfileActivity, "Profile created successfully!", Toast.LENGTH_SHORT).show()
                             navigateToMainApp()

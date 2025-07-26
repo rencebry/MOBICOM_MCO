@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityLoginBinding
-import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
+import com.mobicom.s17.group8.mobicom_mco.home.MainActivity
 
 class LoginActivity : AppCompatActivity() {
 

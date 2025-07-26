@@ -17,7 +17,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityLandingBinding
-import com.mobicom.s17.group8.mobicom_mco.main.MainActivity
+import com.mobicom.s17.group8.mobicom_mco.home.MainActivity
 import com.google.firebase.firestore.ktx.firestore
 
 
