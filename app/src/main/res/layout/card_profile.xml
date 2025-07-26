@@ -13,7 +13,7 @@
         android:id="@+id/ivProfileAvatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="52dp"
         android:src="@drawable/ic_add_photo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -46,14 +46,20 @@
         app:layout_constraintStart_toStartOf="@id/guideline_left_column"
         app:layout_constraintTop_toTopOf="@id/ivProfileAvatar" />
 
+
+    <!-- ROW 2: Course and Year Level -->
+
+
     <TextView
         android:id="@+id/tvNameValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:textColor="@color/text_primary"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@id/guideline_left_column"
         app:layout_constraintTop_toBottomOf="@id/tvNameLabel" />
 
@@ -67,15 +73,11 @@
         app:layout_constraintStart_toStartOf="@id/guideline_right_column"
         app:layout_constraintTop_toTopOf="@id/tvNameLabel" />
 
-
-    <!-- ROW 2: Course and Year Level -->
-
-
     <TextView
         android:id="@+id/tvSchoolValue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
         android:textColor="@color/text_primary"
         android:textSize="14sp"
         android:textStyle="bold"
