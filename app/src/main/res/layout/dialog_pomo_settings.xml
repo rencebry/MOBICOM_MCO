@@ -1,68 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_background"
+    android:orientation="vertical"
     android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvSettingsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/btnClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_close"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/tvSettingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Settings"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <!-- task name  -->
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:padding="4dp"
+            android:src="@drawable/ic_close" />
+
+    </FrameLayout>
+
+    <!-- Task Name -->
     <TextView
         android:id="@+id/tvTaskLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Task"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSettingsTitle" />
+        android:text="Task" />
 
     <EditText
         android:id="@+id/etTaskName"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/edittext_background"
         android:hint="Task Name (max 10 characters)"
         android:inputType="text"
         android:maxLength="10"
-        android:padding="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTaskLabel" />
+        android:padding="12dp" />
 
-    <!-- time input -->
+    <!-- Time Inputs in a single row -->
     <LinearLayout
         android:id="@+id/timeInputsContainer"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etTaskName">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
+        <!-- Focus Column -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -79,16 +76,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_background"
-                android:inputType="number"
-                android:text="30"
                 android:gravity="center"
-                android:padding="12dp" />
+                android:inputType="number"
+                android:padding="12dp"
+                android:text="25" />
         </LinearLayout>
 
         <View
-            android:layout_width="16dp"
+            android:layout_width="8dp"
             android:layout_height="0dp" />
 
+        <!-- Break Column -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -105,16 +103,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_background"
-                android:inputType="number"
-                android:text="5"
                 android:gravity="center"
-                android:padding="12dp" />
+                android:inputType="number"
+                android:padding="12dp"
+                android:text="5" />
         </LinearLayout>
 
         <View
-            android:layout_width="16dp"
+            android:layout_width="8dp"
             android:layout_height="0dp" />
 
+        <!-- Rest Column -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -131,24 +130,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_background"
-                android:inputType="number"
-                android:text="15"
                 android:gravity="center"
-                android:padding="12dp" />
+                android:inputType="number"
+                android:padding="12dp"
+                android:text="15" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
+
+        <!-- Sessions Column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sessions" />
+
+            <EditText
+                android:id="@+id/etSessionsCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_background"
+                android:gravity="center"
+                android:inputType="number"
+                android:padding="12dp"
+                android:text="4" />
         </LinearLayout>
 
     </LinearLayout>
 
+    <!-- Save Button -->
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
         android:backgroundTint="#DCE5D8"
         android:text="Save"
-        android:textColor="@color/text_primary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timeInputsContainer" />
+        android:textColor="@color/text_primary" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

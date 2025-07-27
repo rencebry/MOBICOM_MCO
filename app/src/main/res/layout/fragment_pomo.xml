@@ -8,21 +8,18 @@
     android:background="@drawable/gradient_background_focus"
     tools:context=".pomo.PomoFragment">
 
-    <!-- Top Bar -->
+
     <TextView
         android:id="@+id/tvPomoTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:text="Pomodoro Timer"
-        android:textColor="@color/white"
         android:fontFamily="@font/bg"
+        android:textColor="@color/text_primary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-    <!-- to add music option -->
-
 
     <TextView
         android:id="@+id/tvStatus"

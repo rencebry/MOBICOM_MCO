@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentPomoBinding
 
@@ -15,7 +16,7 @@ class PomoFragment : Fragment() {
     private var _binding: FragmentPomoBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PomoViewModel by lazy {
-        ViewModelProvider(this).get(PomoViewModel::class.java)
+        ViewModelProvider(requireActivity()).get(PomoViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -26,62 +27,71 @@ class PomoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.timeLeftInMillis.observe(viewLifecycleOwner) { millis ->
-            val minutes = (millis / 1000) / 60
-            val seconds = (millis / 1000) % 60
+        setupClickListeners()
+        observeViewModel()
+    }
 
-            // set time
-            binding.circularTimer.setTime(minutes, seconds)
-
-            // update progress
-//             val progress = millis.toFloat() / (25 * 60 * 1000L)
-//             binding.circularTimer.setProgress(progress)
-        }
-
-        // start and stop buttons
+    private fun setupClickListeners() {
         binding.btnStopStart.setOnClickListener {
             viewModel.toggleTimer()
         }
-
-        // reset button
         binding.btnReset.setOnClickListener {
             viewModel.resetTimer()
         }
-
-        // settings
         binding.btnPomoSettings.setOnClickListener {
             PomoSettingsDialogFragment().show(parentFragmentManager, "PomoSettingsDialog")
         }
-
-        observeViewModel()
-
     }
 
     private fun observeViewModel() {
-        // observe time remaining
         viewModel.timeLeftInMillis.observe(viewLifecycleOwner) { millis ->
             val minutes = (millis / 1000) / 60
             val seconds = (millis / 1000) % 60
             binding.circularTimer.setTime(minutes, seconds)
-            // to update progress
         }
 
-        // running state
+        viewModel.progress.observe(viewLifecycleOwner) { progress ->
+            binding.circularTimer.setProgress(progress)
+        }
+
         viewModel.isTimerRunning.observe(viewLifecycleOwner) { isRunning ->
             if (isRunning) {
-                // timer is running: show stop and change color
-                binding.btnStopStart.text = "Stop"
-
-                // change color button
+                binding.btnStopStart.text = "Pause"
                 binding.btnStopStart.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.button_stop_color)
             } else {
-                // timer is stopped/paused: show start
                 binding.btnStopStart.text = "Start"
-
-                // back to start button
                 binding.btnStopStart.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.button_start_color)
+            }
+        }
+
+        viewModel.taskName.observe(viewLifecycleOwner) { taskName ->
+            if (taskName != null) {
+                binding.tvTaskName.text = taskName
+                binding.tvTaskName.visibility = View.VISIBLE
+            } else {
+                binding.tvTaskName.visibility = View.GONE
+            }
+        }
+
+        viewModel.timerState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                PomoViewModel.TimerState.FOCUS -> {
+                    binding.pomoRootLayout.setBackgroundResource(R.drawable.gradient_background_focus)
+                    binding.tvStatus.text = "Focus"
+                    binding.circularTimer.setProgressColor(R.color.timer_progress_dark)
+                }
+                PomoViewModel.TimerState.SHORT_BREAK -> {
+                    binding.pomoRootLayout.setBackgroundResource(R.drawable.gradient_background_short_break)
+                    binding.tvStatus.text = "Take a Break!"
+                    binding.circularTimer.setProgressColor(R.color.timer_progress_dark)
+                }
+                PomoViewModel.TimerState.LONG_BREAK -> {
+                    binding.pomoRootLayout.setBackgroundResource(R.drawable.gradient_background_long_break)
+                    binding.tvStatus.text = "Rest"
+                    binding.circularTimer.setProgressColor(R.color.timer_progress_dark)
+                }
             }
         }
     }
