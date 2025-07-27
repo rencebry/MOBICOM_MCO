@@ -73,12 +73,12 @@ class MusicFragment : Fragment() {
 
     private fun getMusicData(): List<MusicTrack> {
         return listOf(
-            MusicTrack("Rainfall", R.color.vinyl_blue),
-            MusicTrack("Forest", R.color.vinyl_green),
-            MusicTrack("Brown Noise", R.color.vinyl_yellow),
-            MusicTrack("Fireplace", R.color.vinyl_orange),
-            MusicTrack("Lo-fi", R.color.vinyl_purple),
-            MusicTrack("Soft Ambient", R.color.vinyl_mint)
+            MusicTrack("Rainfall", R.color.vinyl_blue, R.raw.rainfall),
+            MusicTrack("Forest", R.color.vinyl_green, R.raw.forest),
+            MusicTrack("Brown Noise", R.color.vinyl_yellow, R.raw.brown_nosie),
+            MusicTrack("Fireplace", R.color.vinyl_orange, R.raw.fireplace),
+            MusicTrack("Ocean Waves", R.color.vinyl_purple, R.raw.ocean_waves),
+            MusicTrack("Birds", R.color.vinyl_mint, R.raw.birds)
         )
     }
 

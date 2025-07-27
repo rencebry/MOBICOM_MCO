@@ -9,23 +9,29 @@ class MusicSharedViewModel : ViewModel() {
     private val _currentlyPlayingTrack = MutableLiveData<MusicTrack?>()
     val currentlyPlayingTrack: LiveData<MusicTrack?> = _currentlyPlayingTrack
 
-
     private val _isPlaying = MutableLiveData<Boolean>(false)
     val isPlaying: LiveData<Boolean> = _isPlaying
 
+    // This will hold our connection to the MusicService
+    var musicService: MusicService? = null
+
     fun selectTrack(track: MusicTrack?) {
-        if (track == null) {
-            // track is deselected
-            _isPlaying.value = false // pause
-        } else {
-            // new track selected
-            _isPlaying.value = true // playing
-        }
         _currentlyPlayingTrack.value = track
+
+        if (track != null) {
+            // Tell the service to play the new track
+            musicService?.playTrack(track.trackResId)
+            _isPlaying.value = true
+        } else {
+            // No track selected, tell the service to stop
+            musicService?.stopPlayback()
+            _isPlaying.value = false
+        }
     }
 
     fun togglePlayPause() {
-        val currentlyPlaying = _isPlaying.value ?: false
-        _isPlaying.value = !currentlyPlaying
+        musicService?.togglePlayPause()
+        // Update our LiveData to reflect the service's new state
+        _isPlaying.value = musicService?.isPlaying()
     }
 }

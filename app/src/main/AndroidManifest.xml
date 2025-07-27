@@ -27,7 +27,10 @@
         <activity android:name=".auth.CreateProfileActivity"  />
         <activity android:name=".home.MainActivity" />
         <activity android:name=".home.EditProfileActivity" />
-
+        <service
+            android:name=".music.MusicService"
+            android:enabled="true"
+            android:exported="false" />
 
 
     </application>

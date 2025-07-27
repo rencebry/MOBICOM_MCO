@@ -1,6 +1,11 @@
 package com.mobicom.s17.group8.mobicom_mco.home
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.content.Intent
+import android.os.IBinder
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -9,6 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.mobicom.s17.group8.mobicom_mco.R
 import androidx.lifecycle.ViewModelProvider
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityMainBinding
+import com.mobicom.s17.group8.mobicom_mco.music.MusicService
 import com.mobicom.s17.group8.mobicom_mco.music.MusicSharedViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +23,25 @@ class MainActivity : AppCompatActivity() {
     private val sharedViewModel: MusicSharedViewModel by lazy {
         ViewModelProvider(this).get(MusicSharedViewModel::class.java)
     }
+
+    private var musicService: MusicService? = null
+    private var isBound = false
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            val binder = service as MusicService.MusicBinder
+            musicService = binder.getService()
+
+            sharedViewModel.musicService = musicService
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            sharedViewModel.musicService = null
+            isBound = false
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -33,6 +58,18 @@ class MainActivity : AppCompatActivity() {
         }
         observeMusicPlayer()
 
+        Intent(this, MusicService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
     }
 
     private fun observeMusicPlayer() {
