@@ -71,7 +71,7 @@
     <string name="backtoCourses">Back to Courses</string>
     <string name="deck_name">Deck Name</string>
     <string name="deck_star">Favorite</string>
-    <string name="deck_stat">Date created | X flashcards</string>
+    <string name="deck_stat">%1$s | %2$d flashcards</string>
     <string name="deck_play">Play deck</string>
     <string name="deck_menu">Menu</string>
     <string name="add_deck">Add deck</string>
@@ -86,8 +86,8 @@
     <string name="flashcards_page">Flashcards</string>
     <string name="backtoDecks">Back to Decks</string>
     <string name="flashcard_number">#</string>
-    <string name="flashcard_term">Term</string>
-    <string name="flashcard_definition">Definition</string>
+    <string name="flashcard_question_label">Question</string>
+    <string name="flashcard_answer_label">Answer</string>
     <string name="flashcard_menu">Menu</string>
     <string name="add_cards">Add Card/s</string>
 
@@ -99,7 +99,7 @@
     <!-- Playing Flashcards -->
     <string name="flashcard_favorite">Favorite this card</string>
     <string name="continue_with_google">Continue with Google</string>
-
+    
     <!-- Web client id -->
     <string name="default_web_client_id">330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com</string>
     <string name="ex_you_email_com">Ex. you@email.com</string>
