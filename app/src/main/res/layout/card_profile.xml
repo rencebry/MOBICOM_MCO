@@ -13,7 +13,7 @@
         android:id="@+id/ivProfileAvatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="40dp"
         android:src="@drawable/ic_add_photo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
