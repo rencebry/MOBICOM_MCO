@@ -23,7 +23,7 @@
         android:label="fragment_music"
         tools:layout="@layout/fragment_music" />
 
-<!-- fragments for to-do   -->
+    <!-- fragments for to-do -->
     <fragment
         android:id="@+id/nav_todo"
         android:name="com.mobicom.s17.group8.mobicom_mco.task.TodoFragment"
@@ -41,35 +41,48 @@
         android:label="fragment_new_task"
         tools:layout="@layout/fragment_new_task" />
 
+
     <fragment
         android:id="@+id/nav_study"
         android:name="com.mobicom.s17.group8.mobicom_mco.study.StudyFragment"
         android:label="fragment_study"
-        tools:layout="@layout/fragment_study" />
+        tools:layout="@layout/fragment_study">
 
-    <!-- navigation for flashcards -->
+        <action
+            android:id="@+id/action_studyFragment_to_deckListFragment"
+            app:destination="@id/nav_decks" />
+
+    </fragment>
+
     <fragment
-        android:id="@+id/deckListFragment"
+        android:id="@+id/nav_decks"
         android:name="com.mobicom.s17.group8.mobicom_mco.study.DeckListFragment"
         android:label="Decks"
         tools:layout="@layout/fragment_decks">
 
+        <argument
+            android:name="courseId"
+            app:argType="string" />
+        <argument
+            android:name="courseName"
+            app:argType="string" />
+
         <action
             android:id="@+id/action_deckListFragment_to_flashcardListFragment"
-            app:destination="@id/flashcardListFragment">
-            <argument
-                android:name="deckId"
-                app:argType="string" />
-        </action>
+            app:destination="@id/nav_flashcards" />
+
     </fragment>
 
     <fragment
-        android:id="@+id/flashcardListFragment"
+        android:id="@+id/nav_flashcards"
         android:name="com.mobicom.s17.group8.mobicom_mco.study.FlashcardListFragment"
         android:label="Flashcards"
         tools:layout="@layout/fragment_flashcard_list">
+
         <argument
-        android:name="deckId"
-        app:argType="string" />
+            android:name="deckId"
+            app:argType="string" />
+
     </fragment>
+
 </navigation>

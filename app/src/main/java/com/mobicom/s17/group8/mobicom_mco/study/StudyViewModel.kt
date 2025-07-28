@@ -8,15 +8,32 @@ import java.util.UUID
 
 class StudyViewModel : ViewModel() {
 
+    // --- COURSES DATA ---
     private val _courses = MutableLiveData<List<Course>>()
     val courses: LiveData<List<Course>> = _courses
 
-    // user clicks the edit button
-    private val _isEditMode = MutableLiveData<Boolean>(false)
+    private val _isEditMode = MutableLiveData(false)
     val isEditMode: LiveData<Boolean> = _isEditMode
 
+    // --- DECKS & FLASHCARDS DATA (using placeholders for now) ---
+    private val allDecks = MutableLiveData<List<Deck>>()
+    private val allFlashcards = MutableLiveData<List<Flashcard>>()
+
+
     init {
-        loadCourses()
+        loadPlaceholders()
+    }
+
+    // --- Public Functions to be called by Fragments ---
+
+    fun getDecksForCourse(courseId: String): LiveData<List<Deck>> {
+        val filteredDecks = allDecks.value?.filter { it.courseId == courseId }
+        return MutableLiveData(filteredDecks)
+    }
+
+    fun getFlashcardsForDeck(deckId: String): LiveData<List<Flashcard>> {
+        val filteredFlashcards = allFlashcards.value?.filter { it.deckId == deckId }
+        return MutableLiveData(filteredFlashcards)
     }
 
     fun toggleEditMode() {
@@ -35,57 +52,22 @@ class StudyViewModel : ViewModel() {
         _courses.value = currentList
     }
 
-    // only placeholders
-    private fun loadCourses() {
+    // --- placeholders ---
+    private fun loadPlaceholders() {
         _courses.value = listOf(
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "STCLOUD",
-                deckCount = 10,
-                colorResId = R.color.vinyl_blue
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "MOBICOM",
-                deckCount = 8,
-                colorResId = R.color.vinyl_green
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "CSOPESY",
-                deckCount = 12,
-                colorResId = R.color.vinyl_yellow
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "LCFILIB",
-                deckCount = 5,
-                colorResId = R.color.vinyl_orange
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "CSARCH2",
-                deckCount = 7,
-                colorResId = R.color.vinyl_purple
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "CSARCH1",
-                deckCount = 9,
-                colorResId = R.color.vinyl_mint
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "STADVDB",
-                deckCount = 9,
-                colorResId = R.color.vinyl_mint
-            ),
-            Course(
-                id = UUID.randomUUID().toString(),
-                name = "CCPROG1",
-                deckCount = 9,
-                colorResId = R.color.vinyl_mint
-            )
+            Course("course1", "STCLOUD", 10, R.color.vinyl_blue),
+            Course("course2", "MOBICOM", 8, R.color.vinyl_green),
+            Course("course3", "CSOPESY", 12, R.color.vinyl_yellow)
+        )
+        allDecks.value = listOf(
+            Deck("course1", "deck1", "Android Basics", 10, "2024-07-17"),
+            Deck("course1", "deck2", "Kotlin Fundamentals", 8, "2024-07-16"),
+            Deck("course2", "deck3", "Jetpack Compose", 12, "2024-07-15")
+        )
+        allFlashcards.value = listOf(
+            Flashcard("1", "course1", "deck1", "What is Android?", "An OS."),
+            Flashcard("2", "course1", "deck1", "What is Kotlin?", "A modern language."),
+            Flashcard("3", "course2", "deck3", "What is a Fragment?", "A modular UI block.")
         )
     }
 }

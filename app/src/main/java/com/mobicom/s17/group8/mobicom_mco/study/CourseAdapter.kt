@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemCourseBinding
 
 class CourseAdapter(
+    private val onCourseClicked: (Course) -> Unit,
     private val onDeleteClicked: (Course) -> Unit
 ) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
 
@@ -32,11 +33,16 @@ class CourseAdapter(
             val color = ContextCompat.getColor(root.context, course.colorResId)
             viewColor.setBackgroundColor(color)
 
-            // Show/hide delete button based on mode
             btnDelete.visibility = if (isEditMode) View.VISIBLE else View.GONE
 
             btnDelete.setOnClickListener {
                 onDeleteClicked(course)
+            }
+
+            root.setOnClickListener {
+                if (!isEditMode) { // Only navigate if not in edit mode
+                    onCourseClicked(course)
+                }
             }
         }
     }

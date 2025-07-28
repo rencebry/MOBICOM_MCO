@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentStudyBinding
 
 
@@ -40,11 +41,16 @@ class StudyFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        courseAdapter = CourseAdapter { course ->
-            // TODO: Confirm deletion prompt
-            // delete
-            viewModel.deleteCourse(course.id)
-        }
+        courseAdapter = CourseAdapter(
+            onCourseClicked = { course ->
+                val action = StudyFragmentDirections.actionStudyFragmentToDeckListFragment(course.id, course.name)
+                findNavController().navigate(action)
+            },
+            onDeleteClicked = { course ->
+                // TODO: Show confirm delete dialog
+                viewModel.deleteCourse(course.id)
+            }
+        )
         binding.rvCourses.adapter = courseAdapter
     }
 
