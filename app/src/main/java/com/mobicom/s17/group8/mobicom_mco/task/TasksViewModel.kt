@@ -62,10 +62,15 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
         }
     }
 
-    // Function to update an existing task list
-    fun updateTaskList(taskList: TaskList) {
+    // Function to rename an existing task list
+    fun renameTaskList(taskList: TaskList, newTitle: String) {
         viewModelScope.launch {
-            repository.updateTaskList(taskList)
+            val updatedList = taskList.copy(
+                title = newTitle,
+                updated = Instant.now().toString(),
+                isSynced = false // Mark as unsynced
+            )
+            repository.updateTaskList(updatedList)
         }
     }
 
