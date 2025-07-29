@@ -4,8 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+//import androidx.sqlite.db.SupportSQLiteDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskDao
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskList
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskListDao
 import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
+//import kotlinx.coroutines.CoroutineScope
+//import kotlinx.coroutines.launch
 
 @Database(entities = [User::class, Task::class, TaskList::class],
     version = 1,
@@ -30,7 +37,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                .build()
                 INSTANCE = instance
                 // return instance
                 instance
@@ -38,3 +46,4 @@ abstract class AppDatabase : RoomDatabase() {
         }
     }
 }
+

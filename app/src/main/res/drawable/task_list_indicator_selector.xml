@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- State when the view is selected -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimary" />
+            <size android:height="3dp" />
+        </shape>
+    </item>
+    <!-- Default state (not selected) -->
+    <item android:drawable="@android:color/transparent" />
+</selector>

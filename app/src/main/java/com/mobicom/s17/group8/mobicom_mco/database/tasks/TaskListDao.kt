@@ -1,6 +1,7 @@
-package com.mobicom.s17.group8.mobicom_mco.database
+package com.mobicom.s17.group8.mobicom_mco.database.tasks
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskListDao {
@@ -19,8 +20,8 @@ interface TaskListDao {
     @Query("SELECT * FROM tasklists WHERE id = :id")
     suspend fun getTaskListById(id: String): TaskList?
 
-    @Query("SELECT * FROM tasklists")
-    suspend fun getAllTaskLists(): List<TaskList>
+    @Query("SELECT * FROM tasklists WHERE userId= :userId")
+    fun getTaskListsForUser(userId: String): Flow<List<TaskList>>
 
 //    @Query("DELETE FROM tasklists WHERE isDeleted = 1")
 //    suspend fun deleteAllDeletedTaskLists()

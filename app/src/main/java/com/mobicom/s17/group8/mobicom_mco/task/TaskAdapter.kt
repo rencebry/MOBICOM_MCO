@@ -1,15 +1,16 @@
 package com.mobicom.s17.group8.mobicom_mco.task
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mobicom.s17.group8.mobicom_mco.database.Task
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
 
-class TodoAdapter(
-    private val todoItems: List<Task>,
-) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
     // Implementation of the TodoAdapter class
     // This class will handle the display of todo items in a RecyclerView
     // It will include methods to bind data to views, handle item clicks, etc.
@@ -17,7 +18,9 @@ class TodoAdapter(
     // Placeholder for the actual implementation
     // You can define your ViewHolder, onCreateViewHolder, onBindViewHolder, etc. here
 
-    inner class TodoViewHolder(val binding : ListItemTaskBinding) :
+    var currentTaskListName: String = "Tasks" // Default task list name
+
+    inner class TaskViewHolder(val binding : ListItemTaskBinding) :
         RecyclerView.ViewHolder(binding.root) {
         // Define your ViewHolder class here
         // This class will hold references to the views for each todo item
@@ -27,13 +30,8 @@ class TodoAdapter(
             //binding.taskDetails.text = task.details
             binding.taskCheckbox.isChecked = task.isCompleted
 
-//            if (task.isStarred) {
-//                binding.starredIv.visibility = android.view.View.VISIBLE
-//            } else {
-//                binding.starredIv.visibility = android.view.View.GONE
-//            }
-            //binding.starredIv = task.isStarred
-            binding.taskInfoTv.text = task.label +
+            // TODO: Change according to updated task entity (due date and time should be parsed from the "due" field)
+            binding.taskInfoTv.text = currentTaskListName +
                     when {
                         task.dueDate != null && task.dueTime != null -> " | ${task.dueDate} ${task.dueTime}"
                         task.dueDate != null -> " | ${task.dueDate}"
@@ -44,6 +42,15 @@ class TodoAdapter(
             // Listener for checkbox state change
             binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 task.isCompleted = isChecked
+                task.status = if (isChecked) "completed" else "needsAction"
+            }
+
+            if (task.isCompleted) {
+                binding.taskNameTv.paintFlags =
+                    binding.taskNameTv.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                binding.taskNameTv.paintFlags =
+                    binding.taskNameTv.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
             }
 
 
@@ -54,17 +61,25 @@ class TodoAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding = ListItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        val holder = TodoViewHolder(binding)
+        val holder = TaskViewHolder(binding)
 
         return holder
     }
 
-    override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
-        val task = todoItems[position]
-        holder.bindData(task)
+    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
+        holder.bindData(getItem(position))
+    }
+}
+
+// DiffUtil class for Task entity
+class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
+    override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun getItemCount() = todoItems.size
+    override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
+        return oldItem == newItem
+    }
 }

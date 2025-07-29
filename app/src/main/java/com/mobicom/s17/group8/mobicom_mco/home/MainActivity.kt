@@ -16,13 +16,19 @@ import androidx.lifecycle.ViewModelProvider
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityMainBinding
 import com.mobicom.s17.group8.mobicom_mco.music.MusicService
 import com.mobicom.s17.group8.mobicom_mco.music.MusicSharedViewModel
+import androidx.activity.viewModels
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.auth.UserAuthViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val sharedViewModel: MusicSharedViewModel by lazy {
+    private val musicSharedViewModel: MusicSharedViewModel by lazy {
         ViewModelProvider(this).get(MusicSharedViewModel::class.java)
     }
+
+    private val userAuthViewModel: UserAuthViewModel by viewModels()
 
     private var musicService: MusicService? = null
     private var isBound = false
@@ -32,12 +38,12 @@ class MainActivity : AppCompatActivity() {
             val binder = service as MusicService.MusicBinder
             musicService = binder.getService()
 
-            sharedViewModel.musicService = musicService
+            musicSharedViewModel.musicService = musicService
             isBound = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            sharedViewModel.musicService = null
+            musicSharedViewModel.musicService = null
             isBound = false
         }
     }
@@ -47,6 +53,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Firebase.auth.currentUser?.let { user ->
+            userAuthViewModel.setCurrentUser(user.uid)
+        }
+
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
@@ -54,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         // bottom navigation
         binding.bottomNavigation.setupWithNavController(navController)
         binding.musicPlayerWidget.widgetPauseButton.setOnClickListener {
-            sharedViewModel.togglePlayPause()
+            musicSharedViewModel.togglePlayPause()
         }
         observeMusicPlayer()
 
@@ -73,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeMusicPlayer() {
-        sharedViewModel.currentlyPlayingTrack.observe(this) { track ->
+        musicSharedViewModel.currentlyPlayingTrack.observe(this) { track ->
             if (track != null) {
                 // track is selected: show widget
                 binding.musicWidgetContainer.visibility = View.VISIBLE
@@ -89,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        sharedViewModel.isPlaying.observe(this) { playing ->
+        musicSharedViewModel.isPlaying.observe(this) { playing ->
             if (playing) {
                 binding.musicPlayerWidget.widgetPauseButton.setImageResource(R.drawable.pause)
             } else {

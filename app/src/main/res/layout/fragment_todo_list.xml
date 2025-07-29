@@ -9,37 +9,52 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/todoTopBarContainer"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="150dp"
         android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/todoListRv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Spinner
-            android:id="@+id/spinnerTaskList"
+        <TextView
+            android:id="@+id/taskHeaderTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="29dp"
-            android:drawableEnd="@drawable/arrow_drop_down"
-            android:spinnerMode="dropdown"
-            android:textAlignment="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/spinnerTaskTypeLl"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/task_header"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/taskListRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            app:layoutManager="LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/moreBtn"
+            tools:listitem="@layout/list_item_tasklist" />
 
         <LinearLayout
             android:id="@+id/spinnerTaskTypeLl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="3dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp"
             android:background="@color/color_1020G"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/spinnerViewOptionLl"
-            app:layout_constraintStart_toEndOf="@+id/spinnerTaskList"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/taskListRv">
 
             <Spinner
                 android:id="@+id/spinnerTaskType"
@@ -49,19 +64,24 @@
                 android:gravity="center"
                 android:spinnerMode="dropdown"
                 android:textAlignment="center" />
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/spinnerViewOptionLl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="16dp"
             android:background="@color/color_1020Y50R"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/spinnerTaskTypeLl"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/taskListRv">
 
             <Spinner
                 android:id="@+id/spinnerViewOption"
@@ -73,16 +93,36 @@
                 android:textAlignment="center" />
         </LinearLayout>
 
+        <ImageButton
+            android:id="@+id/moreBtn"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="274dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/white"
+            android:contentDescription="more options button"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/taskHeaderTv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/more_horiz" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/todoListRv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="580dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/todoTopBarContainer"
-        tools:layout_editor_absoluteX="16dp"
+        app:layout_constraintVertical_bias="0.006"
         tools:listitem="@layout/list_item_task">
 
     </androidx.recyclerview.widget.RecyclerView>

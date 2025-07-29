@@ -54,7 +54,7 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="2dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/taskInfoTv"
         app:layout_constraintStart_toEndOf="@+id/taskNameTv"
         app:layout_constraintTop_toTopOf="parent"

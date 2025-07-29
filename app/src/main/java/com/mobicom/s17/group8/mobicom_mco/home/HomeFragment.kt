@@ -3,7 +3,6 @@ package com.mobicom.s17.group8.mobicom_mco.home
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +16,7 @@ import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.auth.LandingActivity
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentHomeBinding
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
-import com.mobicom.s17.group8.mobicom_mco.database.Task
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -33,7 +32,6 @@ import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
 import android.widget.PopupMenu
 import com.bumptech.glide.signature.ObjectKey
-import com.mobicom.s17.group8.mobicom_mco.home.EditProfileActivity
 import java.io.File
 
 // --- local adapter since adding tasks are not yet implemented ---
@@ -51,7 +49,7 @@ class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<Home
         val task = tasks[position]
         holder.binding.apply {
             taskNameTv.text = task.title
-            taskInfoTv.text = "${task.label} | ${task.dueDate}"
+            taskInfoTv.text = "task label | ${task.dueDate}" // "${task.label} | ${task.dueDate}"
             taskCheckbox.isChecked = task.isCompleted
             //starredIv.visibility = if (task.isStarred) View.VISIBLE else View.GONE
         }
@@ -204,6 +202,8 @@ class HomeFragment : Fragment() {
         return listOf(
             Task(
                 id = "1",
+                userId = "user1",
+                tasklistId = "STCLOUD",
                 title = "Finals Exam",
                 status = "needsAction",
                 due = "2025-06-28T09:00:00Z",
@@ -212,16 +212,16 @@ class HomeFragment : Fragment() {
                 completed = null,
                 parent = null,
                 position = "1",
-                tasklistId = "STCLOUD",
                 isSynced = false,
                 isDeleted = false,
                 isCompleted = false,
                 dueDate = "06/28/25",
-                dueTime = "09:00AM",
-                label = "STCLOUD"
+                dueTime = "09:00AM"
             ),
             Task(
                 id = "2",
+                userId = "user1",
+                tasklistId = "MOBICOM",
                 title = "MCO Presentation",
                 status = "needsAction",
                 due = "2025-06-30T14:00:00Z",
@@ -230,16 +230,16 @@ class HomeFragment : Fragment() {
                 completed = null,
                 parent = null,
                 position = "2",
-                tasklistId = "MOBICOM",
                 isSynced = false,
                 isDeleted = false,
                 isCompleted = false,
                 dueDate = "06/30/25",
-                dueTime = "02:00PM",
-                label = "MOBICOM"
+                dueTime = "02:00PM"
             ),
             Task(
                 id = "3",
+                userId = "user1",
+                tasklistId = "CSARCH2",
                 title = "Review for Quiz 2",
                 status = "needsAction",
                 due = "2025-07-02T08:00:00Z",
@@ -248,13 +248,11 @@ class HomeFragment : Fragment() {
                 completed = null,
                 parent = null,
                 position = "3",
-                tasklistId = "CSARCH2",
                 isSynced = false,
                 isDeleted = false,
                 isCompleted = false,
                 dueDate = "07/02/25",
-                dueTime = "08:00AM",
-                label = "CSARCH2"
+                dueTime = "08:00AM"
             )
         )
     }

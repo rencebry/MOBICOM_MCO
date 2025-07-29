@@ -36,6 +36,7 @@
 
 
     <!-- To-do Page-->
+    <string name="task_header">Tasks</string>
     <string name="new_task">New Task</string>
     <string name="task_name">Task</string>
     <string name="task_name_hint">Enter Task</string>
@@ -47,6 +48,7 @@
     <string name="repeat_hint">Does not repeat</string>
     <string name="label">Label</string>
     <string name="label_hint">My Tasks</string>
+    <string name="new_list">New List</string>
 
     <string name="save_button">Save</string>
 <!--    <string-array name="view_options">-->

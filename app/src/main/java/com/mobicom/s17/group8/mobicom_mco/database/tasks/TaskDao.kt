@@ -1,6 +1,7 @@
-package com.mobicom.s17.group8.mobicom_mco.database
+package com.mobicom.s17.group8.mobicom_mco.database.tasks
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
@@ -17,8 +18,8 @@ interface TaskDao {
     suspend fun getTaskById(id: String): Task?
 
     @Query("SELECT * FROM tasks WHERE tasklistId = :tasklistId")
-    suspend fun getTasksByListId(tasklistId: String): List<Task>
+    fun getTasksByListId(tasklistId: String): Flow<List<Task>>
 
-    @Query("SELECT * FROM tasks")
-    suspend fun getAllTasks(): List<Task>
+    @Query("SELECT * FROM tasks WHERE userId = :userId")
+    fun getAllTasksForUser(userId: String): Flow<List<Task>>
 }

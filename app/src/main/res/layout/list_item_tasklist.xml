@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Use a LinearLayout to easily add the indicator below the text -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:gravity="center_horizontal"
+    android:background="?attr/selectableItemBackground"> <!-- Adds a nice ripple effect on click -->
+
+    <TextView
+        android:id="@+id/taskListTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Task List"
+        android:textSize="16sp"
+        android:textColor="@color/task_list_text_selector" /> <!-- 1. APPLY THE TEXT COLOR SELECTOR -->
+
+    <View
+        android:id="@+id/indicator"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@drawable/task_list_indicator_selector" /> <!-- 2. ADD THE INDICATOR VIEW -->
+
+</LinearLayout>
