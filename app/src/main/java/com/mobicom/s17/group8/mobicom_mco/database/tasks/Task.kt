@@ -34,8 +34,4 @@ data class Task(
     val position : String?, // Position of the task in the list (used for ordering)
     var isSynced : Boolean = false, // true if the task is synced with the server/API, default is false
     var isDeleted : Boolean = false, // true if the task is deleted, default is false
-
-    var isCompleted : Boolean = false, // true if the task is completed, will remove later i think
-    val dueDate : String? = null,
-    val dueTime : String? = null
 )

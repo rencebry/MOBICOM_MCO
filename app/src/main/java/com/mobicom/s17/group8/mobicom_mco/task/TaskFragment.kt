@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.navGraphViewModels
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentTodoListBinding
@@ -38,7 +39,7 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
     private lateinit var taskListAdapter: TaskListAdapter
     private lateinit var taskAdapter: TaskAdapter
 
-    private val viewModel: TasksViewModel by viewModels {
+    private val viewModel: TasksViewModel by navGraphViewModels(R.id.nav_graph) {
         val database = AppDatabase.getDatabase(requireContext())
 
         val repository = TaskRepository(database.taskDao(), database.taskListDao())
@@ -58,8 +59,6 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // val loggedInUserId = viewModel.getLoggedInUserId()
-
         // Set up UI components
         setupSpinners()
         setupAdapters()
@@ -75,7 +74,7 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
 
         binding.addTaskFab.setOnClickListener {
             // Handle add task button click
-            //findNavController().navigate(R.id.action_nav_todo_to_new_task)
+            findNavController().navigate(R.id.action_nav_todo_to_new_task)
         }
     }
 
@@ -87,7 +86,9 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
         )
 
         //binding.taskListRv.adapter = taskListAdapter
-        taskAdapter = TaskAdapter()
+        taskAdapter = TaskAdapter { task, isChecked ->
+            viewModel.onTaskCheckedChanged(task, isChecked)
+        }
 
     }
 
@@ -225,7 +226,7 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
             .setNegativeButton("Cancel", null)
             .show()
     }
-    // Sample data for the Todo list
+    // Sample data for the Task list
 //    private fun getTodoData(): List<Task> {
 //        return listOf(
 //            Task(

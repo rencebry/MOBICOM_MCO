@@ -9,8 +9,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
+import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedDate
+import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedTime
 
-class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
+class TaskAdapter(
+    private val onTaskChecked: (Task, Boolean) -> Unit
+    // private val onTaskClicked: (Task) -> Unit
+) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
     // Implementation of the TodoAdapter class
     // This class will handle the display of todo items in a RecyclerView
     // It will include methods to bind data to views, handle item clicks, etc.
@@ -28,24 +33,26 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallba
         fun bindData(task : Task) {
             binding.taskNameTv.text = task.title
             //binding.taskDetails.text = task.details
-            binding.taskCheckbox.isChecked = task.isCompleted
+            binding.taskCheckbox.isChecked = (task.status == "completed")
+            val formattedDate = task.due.toFormattedDate()
+            val formattedTime = task.due.toFormattedTime()
 
             // TODO: Change according to updated task entity (due date and time should be parsed from the "due" field)
             binding.taskInfoTv.text = currentTaskListName +
                     when {
-                        task.dueDate != null && task.dueTime != null -> " | ${task.dueDate} ${task.dueTime}"
-                        task.dueDate != null -> " | ${task.dueDate}"
-                        task.dueTime != null -> " | ${task.dueTime}"
+                        formattedDate != null && formattedTime != null -> " | $formattedDate $formattedTime"
+                        formattedDate != null -> " | $formattedDate"
+                        // formattedTime != null -> " | $formattedTime"
                         else -> ""
                     }
 
-            // Listener for checkbox state change
-            binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                task.isCompleted = isChecked
-                task.status = if (isChecked) "completed" else "needsAction"
-            }
+//            // Listener for checkbox state change
+//            binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
+//                task.isCompleted = isChecked
+//                task.status = if (isChecked) "completed" else "needsAction"
+//            }
 
-            if (task.isCompleted) {
+            if (task.status == "completed") {
                 binding.taskNameTv.paintFlags =
                     binding.taskNameTv.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             } else {
@@ -69,7 +76,14 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallba
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bindData(getItem(position))
+        val task = getItem(position)
+        holder.bindData(task)
+
+        holder.binding.taskCheckbox.setOnCheckedChangeListener(null)
+        holder.binding.taskCheckbox.isChecked = (task.status == "completed")
+        holder.binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
+            onTaskChecked(task, isChecked)
+        }
     }
 }
 

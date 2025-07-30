@@ -7,7 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.navigation.navGraphViewModels
+import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddTasklistBinding
 import java.util.UUID
 import androidx.fragment.app.viewModels
@@ -16,7 +17,7 @@ class TasklistAddDialogFragment : DialogFragment() {
     private var _binding: DialogAddTasklistBinding? = null
     private val binding get() = _binding!!
 
-    private val tasksViewModel: TasksViewModel by viewModels({ requireParentFragment() })
+    private val tasksViewModel: TasksViewModel by navGraphViewModels(R.id.nav_graph)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

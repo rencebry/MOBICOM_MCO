@@ -81,5 +81,54 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
         }
     }
 
+    // Function to add a new task
+    fun addNewTask(title: String, notes: String? ,due: String?, taskListId: String) {
+        viewModelScope.launch {
+            val newTask = Task(
+                id = UUID.randomUUID().toString(),
+                userId = this@TasksViewModel.userId,
+                tasklistId = taskListId,
+                title = title,
+                status = "needsAction", // Default status for new tasks
+                due = due,
+                notes = notes,
+                updated = Instant.now().toString(),
+                completed = null,
+                parent = null,
+                position = "0",
+                isSynced = false,
+                isDeleted = false,
+            )
+            repository.insertTask(newTask)
+        }
+    }
+
+    fun onTaskCheckedChanged(task: Task, isChecked: Boolean) {
+        viewModelScope.launch {
+            val newStatus = if (isChecked) "completed" else "needsAction"
+
+            if (task.status == newStatus) return@launch // No change needed
+
+            val updatedTask = task.copy(
+                status = newStatus,
+                completed = if (isChecked) Instant.now().toString() else null, // Set completion time if checked
+                //isSynced = false // Mark as unsynced
+            )
+            repository.updateTask(updatedTask)
+        }
+    }
+
+    fun editTask(originalTask: Task, newTitle: String, newNotes: String?, newDue: String?) {
+        viewModelScope.launch {
+            val updatedTask = originalTask.copy(
+                title = newTitle,
+                notes = newNotes,
+                due = newDue,
+                updated = Instant.now().toString(),
+                //isSynced = false // Mark as unsynced
+            )
+            repository.updateTask(updatedTask)
+        }
+    }
     // ViewModelFactory to pass the repository to the ViewModel
 }

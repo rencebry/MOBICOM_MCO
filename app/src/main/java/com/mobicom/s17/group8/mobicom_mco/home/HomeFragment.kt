@@ -32,6 +32,8 @@ import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
 import android.widget.PopupMenu
 import com.bumptech.glide.signature.ObjectKey
+import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedDate
+import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedTime
 import java.io.File
 
 // --- local adapter since adding tasks are not yet implemented ---
@@ -48,9 +50,12 @@ class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<Home
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
         holder.binding.apply {
+            val formattedDate = task.due.toFormattedDate()
+            val formattedTime = task.due.toFormattedTime()
+
             taskNameTv.text = task.title
-            taskInfoTv.text = "task label | ${task.dueDate}" // "${task.label} | ${task.dueDate}"
-            taskCheckbox.isChecked = task.isCompleted
+            taskInfoTv.text = "task label | $formattedDate $formattedTime"
+            taskCheckbox.isChecked = (task.status == "completed")
             //starredIv.visibility = if (task.isStarred) View.VISIBLE else View.GONE
         }
     }
@@ -214,9 +219,6 @@ class HomeFragment : Fragment() {
                 position = "1",
                 isSynced = false,
                 isDeleted = false,
-                isCompleted = false,
-                dueDate = "06/28/25",
-                dueTime = "09:00AM"
             ),
             Task(
                 id = "2",
@@ -232,9 +234,6 @@ class HomeFragment : Fragment() {
                 position = "2",
                 isSynced = false,
                 isDeleted = false,
-                isCompleted = false,
-                dueDate = "06/30/25",
-                dueTime = "02:00PM"
             ),
             Task(
                 id = "3",
@@ -250,9 +249,6 @@ class HomeFragment : Fragment() {
                 position = "3",
                 isSynced = false,
                 isDeleted = false,
-                isCompleted = false,
-                dueDate = "07/02/25",
-                dueTime = "08:00AM"
             )
         )
     }
