@@ -11,26 +11,36 @@
         android:layout_height="37dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
+        android:layout_marginBottom="21dp"
         android:background="@color/white"
         android:contentDescription="return button"
         android:scaleX="2"
         android:scaleY="2"
         android:src="@drawable/chevron_arrow_down"
+        app:layout_constraintBottom_toTopOf="@+id/taskTv"
+        app:layout_constraintEnd_toStartOf="@+id/moreBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/newTaskTv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/new_task"
-        android:textSize="28sp"
-        android:textStyle="bold"
+
+    <ImageButton
+        android:id="@+id/moreBtn"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="288dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="60dp"
+        android:background="@color/white"
+        android:contentDescription="more options button"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        app:layout_constraintBottom_toTopOf="@+id/taskNameEtv"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.367"
         app:layout_constraintStart_toEndOf="@+id/returnButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/more_horiz" />
 
     <TextView
         android:id="@+id/taskTv"
@@ -111,7 +121,6 @@
         android:id="@+id/taskLabelTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="15dp"
         android:layout_marginBottom="7dp"
         android:font="@font/bg"
@@ -182,7 +191,7 @@
         android:background="@drawable/edittext_background"
         android:clickable="true"
         android:ems="10"
-        android:focusable="true"
+        android:focusable="false"
         android:gravity="center"
         android:hint="@string/set_date_hint"
         android:inputType="none"
@@ -200,7 +209,7 @@
         android:background="@drawable/edittext_background"
         android:clickable="true"
         android:ems="10"
-        android:focusable="true"
+        android:focusable="false"
         android:gravity="center"
         android:hint="@string/set_time_hint"
         android:inputType="none"
@@ -210,18 +219,17 @@
         app:layout_constraintTop_toBottomOf="@+id/dueDateSwitch" />
 
     <Button
-        android:id="@+id/submitBtn"
-        android:layout_width="136dp"
-        android:layout_height="52dp"
+        android:id="@+id/markCompletedBtn"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="137dp"
         android:layout_marginBottom="50dp"
-        android:text="@string/save_button"
-        android:textSize="20sp"
-        android:enabled="false"
-        android:backgroundTint="@color/button_save_background_selector"
-        android:textColor="@color/button_save_text_selector"
+        android:text="@string/mark_completed"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/setDueDateTv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -85,10 +85,15 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
             onAddNewListClicked = { TasklistAddDialogFragment().show(childFragmentManager, "AddTaskListDialog") }
         )
 
-        //binding.taskListRv.adapter = taskListAdapter
-        taskAdapter = TaskAdapter { task, isChecked ->
-            viewModel.onTaskCheckedChanged(task, isChecked)
-        }
+        taskAdapter = TaskAdapter(
+            onTaskChecked = { task, isChecked ->
+                viewModel.onTaskCheckedChanged(task, isChecked)
+            },
+            onTaskClicked = { task ->
+                val action = TaskFragmentDirections.actionNavTodoToViewTask(task.id)
+                findNavController().navigate(action)
+            }
+        )
 
     }
 

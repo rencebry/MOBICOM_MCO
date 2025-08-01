@@ -6,12 +6,37 @@ import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskList
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
 
 class TasksViewModel(private val repository: TaskRepository, private val userId: String) : ViewModel() {
+
+    // State for View/Edit Screen
+    private val _viewedTask = MutableStateFlow<Task?>(null)
+    val viewedTask: StateFlow<Task?> = _viewedTask.asStateFlow()
+
+    // Event channel for "Undo" snackbar
+    private val _taskMarkedCompleteEvent = MutableSharedFlow<Task>()
+    val taskMarkedCompleteEvent = _taskMarkedCompleteEvent.asSharedFlow()
+    private var taskBeforeCompletion: Task? = null
+
+    private var taskBeforeToggle: Task? = null
+
+    fun loadTaskDetails(taskId: String){
+        viewModelScope.launch {
+            _viewedTask.value = repository.getTaskById(taskId)
+        }
+    }
 
     // Flow to observe all task lists
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -118,17 +143,64 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
         }
     }
 
-    fun editTask(originalTask: Task, newTitle: String, newNotes: String?, newDue: String?) {
+    fun updateTask(title: String, notes: String?, due: String?, taskListId: String) {
+        val currentTask = _viewedTask.value ?: return
+
+        if(currentTask.title == title && currentTask.notes == notes && currentTask.due == due && currentTask.tasklistId == taskListId) {
+            return // No changes to update
+        }
         viewModelScope.launch {
-            val updatedTask = originalTask.copy(
-                title = newTitle,
-                notes = newNotes,
-                due = newDue,
+            val updatedTask = currentTask.copy(
+                title = title,
+                notes = notes,
+                due = due,
+                tasklistId = taskListId,
                 updated = Instant.now().toString(),
                 //isSynced = false // Mark as unsynced
             )
             repository.updateTask(updatedTask)
+            _viewedTask.value = updatedTask // Update the viewed task
         }
     }
-    // ViewModelFactory to pass the repository to the ViewModel
+
+    // Mark completed logic with Undo
+    fun toggleTaskCompletion() {
+        val currentTask = _viewedTask.value ?: return
+        taskBeforeToggle = currentTask
+
+        val isNowCompleted = (currentTask.status != "completed")
+        val newStatus = if (isNowCompleted) "completed" else "needsAction"
+        val newCompletedTimestamp = if (isNowCompleted) Instant.now().toString() else null
+
+        viewModelScope.launch {
+            val toggledTask = currentTask.copy(
+                status = newStatus,
+                completed = newCompletedTimestamp
+            )
+            repository.updateTask(toggledTask)
+            if (isNowCompleted){
+                _taskMarkedCompleteEvent.emit(toggledTask) // Send event to show Snackbar
+            } else {
+                _viewedTask.value = toggledTask
+            }
+        }
+    }
+
+    fun undoToggleCompletion() {
+        taskBeforeToggle?.let { originalTask ->
+            viewModelScope.launch {
+                repository.updateTask(originalTask)
+                _viewedTask.value = originalTask // Restore the original task state
+                taskBeforeToggle = null
+            }
+        }
+    }
+
+    fun deleteTask() {
+        _viewedTask.value?.let { taskToDelete ->
+            viewModelScope.launch {
+                repository.deleteTask(taskToDelete)
+            }
+        }
+    }
 }

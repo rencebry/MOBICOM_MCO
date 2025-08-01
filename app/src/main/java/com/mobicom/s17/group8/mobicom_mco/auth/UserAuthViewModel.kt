@@ -16,7 +16,7 @@ class UserAuthViewModel : ViewModel() {
     }
 
     // Function to clear the current user ID (e.g., on logout)
-    fun clearCurrentUser() {
-        _currentUserId.value = null
-    }
+//    fun clearCurrentUser() {
+//        _currentUserId.value = null
+//    }
 }

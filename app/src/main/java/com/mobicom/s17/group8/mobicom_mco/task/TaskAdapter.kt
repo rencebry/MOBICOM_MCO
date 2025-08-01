@@ -13,8 +13,8 @@ import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedDate
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedTime
 
 class TaskAdapter(
-    private val onTaskChecked: (Task, Boolean) -> Unit
-    // private val onTaskClicked: (Task) -> Unit
+    private val onTaskChecked: (Task, Boolean) -> Unit,
+    private val onTaskClicked: (Task) -> Unit
 ) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
     // Implementation of the TodoAdapter class
     // This class will handle the display of todo items in a RecyclerView
@@ -37,7 +37,6 @@ class TaskAdapter(
             val formattedDate = task.due.toFormattedDate()
             val formattedTime = task.due.toFormattedTime()
 
-            // TODO: Change according to updated task entity (due date and time should be parsed from the "due" field)
             binding.taskInfoTv.text = currentTaskListName +
                     when {
                         formattedDate != null && formattedTime != null -> " | $formattedDate $formattedTime"
@@ -60,11 +59,11 @@ class TaskAdapter(
                     binding.taskNameTv.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
             }
 
-
-//            binding.root.setOnClickListener {
-//                // Handle click event of a specific task, e.g., navigate to task details, which is another page
-//                onTaskClicked(task)
-//            }
+            // Set the click listener on the whole task item
+            binding.root.setOnClickListener {
+                // Handle click event of a specific task, e.g., navigate to task details, which is another page
+                onTaskClicked(task)
+            }
         }
     }
 
@@ -79,10 +78,21 @@ class TaskAdapter(
         val task = getItem(position)
         holder.bindData(task)
 
+        holder.binding.root.setOnClickListener {
+            // Get the freshest position at the moment of the click
+            val currentPosition = holder.adapterPosition
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                onTaskClicked(getItem(currentPosition))
+            }
+        }
+
         holder.binding.taskCheckbox.setOnCheckedChangeListener(null)
-        holder.binding.taskCheckbox.isChecked = (task.status == "completed")
+        holder.binding.taskCheckbox.isChecked = (task.status == "completed") // Re-set state after clearing listener
         holder.binding.taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
-            onTaskChecked(task, isChecked)
+            val currentPosition = holder.adapterPosition
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                onTaskChecked(getItem(currentPosition), isChecked)
+            }
         }
     }
 }

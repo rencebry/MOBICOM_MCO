@@ -155,7 +155,12 @@ class HomeFragment : Fragment() {
                             yearLevel = document.getLong("yearLevel")?.toInt(),
                             localProfilePictureUri = existingUser?.localProfilePictureUri
                         )
-                        userDao.insertOrUpdateUser(updatedUser)
+                        if (existingUser != null) {
+                            userDao.updateUser(updatedUser)
+                        } else {
+                            userDao.insertOrUpdateUser(updatedUser)
+                        }
+
                     }
                 } else {
                     Log.d("HomeFragment", "No Firestore document for user: ${currentUser.uid}")

@@ -34,6 +34,10 @@
             android:id="@+id/action_nav_todo_to_new_task"
             app:destination="@id/new_task_fragment" />
 
+        <action
+            android:id="@+id/action_nav_todo_to_view_task"
+            app:destination="@id/view_task_fragment" />
+
         <argument
             android:name="userId"
             app:argType="string" />
@@ -45,7 +49,18 @@
         android:label="fragment_new_task"
         tools:layout="@layout/fragment_new_task" />
 
+    <fragment
+        android:id="@+id/view_task_fragment"
+        android:name="com.mobicom.s17.group8.mobicom_mco.task.ViewTaskFragment"
+        android:label="Task Details"
+        tools:layout="@layout/fragment_view_task">
 
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+    </fragment>
+
+    <!-- fragments for flashcards -->
     <fragment
         android:id="@+id/nav_study"
         android:name="com.mobicom.s17.group8.mobicom_mco.study.StudyFragment"

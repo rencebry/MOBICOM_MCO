@@ -79,7 +79,7 @@ class TaskListAdapter (
             ITEM_VIEW_TYPE_ADD_BUTTON -> {
                 val binding = ItemAddNewListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 AddNewListViewHolder(binding).apply {
-                    binding.root.setOnClickListener { onAddNewListClicked() } // TODO: double check this
+                    binding.root.setOnClickListener { onAddNewListClicked() }
                 }
             }
             else -> throw IllegalArgumentException("Invalid view type")

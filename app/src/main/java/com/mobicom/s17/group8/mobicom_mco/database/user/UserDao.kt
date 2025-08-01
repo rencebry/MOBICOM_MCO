@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface UserDao {
@@ -12,6 +13,9 @@ interface UserDao {
     // Insert or update a user. If a user with the same UID already exists, it will be replaced.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateUser(user: User)
+
+    @Update
+    suspend fun updateUser(user: User)
 
     // Get a specific user by their UID. Returns LiveData, so your UI can automatically update.
     @Query("SELECT * FROM user_profile WHERE uid = :uid")

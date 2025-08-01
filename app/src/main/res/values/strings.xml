@@ -49,6 +49,7 @@
     <string name="label">Label</string>
     <string name="label_hint">My Tasks</string>
     <string name="new_list">New List</string>
+    <string name="mark_completed">Mark Completed</string>
 
     <string name="save_button">Save</string>
 <!--    <string-array name="view_options">-->
