@@ -4,6 +4,8 @@ import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class PomoViewModel : ViewModel() {
@@ -26,6 +28,8 @@ class PomoViewModel : ViewModel() {
     private val _taskName = MutableLiveData<String?>("Task Name") // Start with a default
     val taskName: LiveData<String?> = _taskName
 
+    private val _notificationEvent = MutableLiveData<Pair<String, String>?>()
+    val notificationEvent: LiveData<Pair<String, String>?> = _notificationEvent
 
 
     // --- Timer Settings ---
@@ -88,36 +92,43 @@ class PomoViewModel : ViewModel() {
 
 
     private fun moveToNextState() {
-        val nextState = when (_timerState.value) {
+        val previousState = _timerState.value
+        val nextState = when (previousState) {
             TimerState.FOCUS -> {
-                // Focus session just ended
                 val currentCount = _currentSessionCount.value ?: 1
                 if (currentCount >= sessionsUntilLongBreak) {
-                    // Time for a long break
-                    _currentSessionCount.value = 1 // Reset for the next cycle
+                    _currentSessionCount.value = 1
                     TimerState.LONG_BREAK
                 } else {
-                    // Time for a short break
                     TimerState.SHORT_BREAK
                 }
             }
             TimerState.SHORT_BREAK -> {
-                // A short break just ended, time to focus again
                 _currentSessionCount.value = (_currentSessionCount.value ?: 0) + 1
                 TimerState.FOCUS
             }
             TimerState.LONG_BREAK -> {
-                // A long break just ended, time to focus again
                 TimerState.FOCUS
             }
-            else -> TimerState.FOCUS // Default case
+            else -> TimerState.FOCUS
+        }
+
+        viewModelScope.launch {
+            when (previousState) {
+                TimerState.FOCUS -> _notificationEvent.value = Pair("Time for a break!", "Your focus session is over. Time to rest.")
+                TimerState.SHORT_BREAK -> _notificationEvent.value = Pair("Break's over!", "Time to get back to focus.")
+                TimerState.LONG_BREAK -> _notificationEvent.value = Pair("Long break finished!", "Ready for the next round of focus?")
+                else -> {}
+            }
         }
 
         _timerState.value = nextState
-
         updateDurationsAndResetUI()
-
         startTimer()
+    }
+
+    fun notificationShown() {
+        _notificationEvent.value = null
     }
 
     fun updateSettings(task: String, focus: Int, short: Int, long: Int, sessions: Int) {
