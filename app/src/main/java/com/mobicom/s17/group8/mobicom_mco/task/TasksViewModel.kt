@@ -1,6 +1,7 @@
 package com.mobicom.s17.group8.mobicom_mco.task
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskList
@@ -18,19 +19,26 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.UUID
+import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.Flow
+import java.time.ZonedDateTime
+
+enum class TaskFilter { ONGOING, ALL, MISSED, COMPLETED }
 
 class TasksViewModel(private val repository: TaskRepository, private val userId: String) : ViewModel() {
 
-    // State for View/Edit Screen
     private val _viewedTask = MutableStateFlow<Task?>(null)
     val viewedTask: StateFlow<Task?> = _viewedTask.asStateFlow()
 
-    // Event channel for "Undo" snackbar
     private val _taskMarkedCompleteEvent = MutableSharedFlow<Task>()
     val taskMarkedCompleteEvent = _taskMarkedCompleteEvent.asSharedFlow()
     private var taskBeforeCompletion: Task? = null
 
     private var taskBeforeToggle: Task? = null
+
+    private val _taskFilter = MutableStateFlow(TaskFilter.ONGOING)
+    val taskFilter: StateFlow<TaskFilter> = _taskFilter
 
     fun loadTaskDetails(taskId: String){
         viewModelScope.launch {
@@ -38,6 +46,18 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
         }
     }
 
+    val upcomingTasks = getUpcomingTasks(userId).asLiveData()
+
+    private fun getUpcomingTasks(userId: String): Flow<List<Task>> {
+        val formatter = DateTimeFormatter.ISO_INSTANT
+        val now = ZonedDateTime.now()
+        val sevenDaysFromNow = now.plusDays(7).withHour(23).withMinute(59).withSecond(59)
+
+        val startDateString = formatter.format(now.toInstant())
+        val endDateString = formatter.format(sevenDaysFromNow.toInstant())
+
+        return repository.getUpcomingTasks(userId, startDateString, endDateString)
+    }
     // Flow to observe all task lists
     @OptIn(ExperimentalCoroutinesApi::class)
     val allTaskLists: StateFlow<List<TaskList>> =
@@ -48,23 +68,35 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
             initialValue = emptyList()
         )
 
-    // Keep track of the currently selected task list ID
     private val _selectedTaskListId = MutableStateFlow<String?>(null)
     val selectedTaskListId : StateFlow<String?> = _selectedTaskListId.asStateFlow()
 
-    // Expose a flow of tasks that automatically updates when the selected ID changes
     @OptIn(ExperimentalCoroutinesApi::class)
-    val tasksForSelectedList: StateFlow<List<Task>> = _selectedTaskListId.flatMapLatest { id ->
-        if (id == null) {
-            flowOf(emptyList()) // Return an empty flow if no list is selected
+    val tasksForSelectedList: StateFlow<List<Task>> = combine(selectedTaskListId, _taskFilter) { listId, filter ->
+        Pair(listId, filter)
+    }.flatMapLatest { (listId, filter) ->
+        if (listId == null) {
+            flowOf(emptyList())
         } else {
-            repository.getTasksByListId(id)
+            val currentDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+            when (filter) {
+                TaskFilter.ONGOING -> repository.getOngoingTasksInList(listId, currentDate)
+                TaskFilter.ALL -> repository.getAllTasksInList(listId)
+                TaskFilter.MISSED -> repository.getMissedTasksInList(listId, currentDate)
+                TaskFilter.COMPLETED -> repository.getCompletedTasksInList(listId)
+            }
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000), // Start collecting when the UI is visible
+            initialValue = emptyList() // Start with an empty list
+        )
+
+    fun setFilter(filter: TaskFilter) {
+        _taskFilter.value = filter
+    }
+
 
     fun selectTaskList(taskListId: String?) {
         _selectedTaskListId.value = taskListId

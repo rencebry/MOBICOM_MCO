@@ -62,4 +62,20 @@ class TaskRepository (
     fun getUpcomingTasks(userId: String, startDate: String, endDate: String): Flow<List<Task>> {
         return taskDao.getUpcomingTasksForUser(userId, startDate, endDate)
     }
+
+    fun getAllTasksInList(taskListId: String): Flow<List<Task>> {
+        return taskDao.getAllTasksInList(taskListId)
+    }
+
+    fun getCompletedTasksInList(taskListId: String): Flow<List<Task>> {
+        return taskDao.getCompletedTasksInList(taskListId)
+    }
+
+    fun getMissedTasksInList(taskListId: String, currentDate: String): Flow<List<Task>> {
+        return taskDao.getMissedTasksInList(taskListId, currentDate)
+    }
+
+    fun getOngoingTasksInList(taskListId: String, currentDate: String): Flow<List<Task>> {
+        return taskDao.getOngoingTasksInList(taskListId, currentDate)
+    }
 }

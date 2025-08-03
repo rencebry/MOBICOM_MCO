@@ -1,42 +1,79 @@
 package com.mobicom.s17.group8.mobicom_mco.home
 
 import android.annotation.SuppressLint
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedDate
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedTime
 
-class HomeTaskAdapter(private var tasks: List<Task> = emptyList()) : RecyclerView.Adapter<HomeTaskAdapter.TaskViewHolder>() {
+class HomeTaskAdapter(
+    private val onTaskChecked: (Task, Boolean) -> Unit,
+    private val onTaskClicked: (Task) -> Unit
+) : ListAdapter<Task, HomeTaskAdapter.TaskViewHolder>(HomeTaskDiffCallback()) {
 
-    inner class TaskViewHolder(val binding: ListItemTaskBinding) : RecyclerView.ViewHolder(binding.root)
+    private var taskListMap: Map<String, String> = emptyMap()
+
+    inner class TaskViewHolder(val binding: ListItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        @SuppressLint("SetTextI18n")
+        fun bind(task: Task) {
+            binding.apply {
+                taskNameTv.text = task.title
+
+                taskNameTv.paintFlags = if (task.status == "completed") {
+                    taskNameTv.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                } else {
+                    taskNameTv.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                }
+
+                val formattedDate = task.due?.toFormattedDate() ?: ""
+                val formattedTime = task.due?.toFormattedTime() ?: ""
+
+                val listName = taskListMap[task.tasklistId] ?: "Task"
+
+                taskInfoTv.text = "$listName | $formattedDate $formattedTime".trim()
+
+                taskCheckbox.setOnCheckedChangeListener(null)
+                taskCheckbox.isChecked = (task.status == "completed")
+                taskCheckbox.setOnCheckedChangeListener { _, isChecked ->
+                    onTaskChecked(task, isChecked)
+                }
+
+                // Handle item clicks
+                root.setOnClickListener {
+                    onTaskClicked(task)
+                }
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding = ListItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TaskViewHolder(binding)
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val task = tasks[position]
-        holder.binding.apply {
-            val formattedDate = task.due?.toFormattedDate() ?: "No date"
-            val formattedTime = task.due?.toFormattedTime() ?: ""
-
-            taskNameTv.text = task.title
-            taskInfoTv.text = "task label | $formattedDate $formattedTime".trim()
-            taskCheckbox.isChecked = (task.status == "completed")
-        }
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int {
-        return tasks.size
-    }
-
-    fun submitList(newTasks: List<Task>) {
-        tasks = newTasks
+    fun submitTaskLists(lists: List<com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskList>) {
+        taskListMap = lists.associateBy({ it.id }, { it.title })
         notifyDataSetChanged()
+    }
+}
+
+class HomeTaskDiffCallback : DiffUtil.ItemCallback<Task>() {
+    override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
+        return oldItem == newItem
     }
 }

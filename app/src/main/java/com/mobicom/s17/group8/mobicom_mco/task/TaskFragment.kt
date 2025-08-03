@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -161,6 +162,22 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
         taskTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerTaskType.adapter = taskTypeAdapter
 
+        binding.spinnerTaskType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedFilter = when (position) {
+                    0 -> TaskFilter.ONGOING
+                    1 -> TaskFilter.ALL
+                    2 -> TaskFilter.MISSED
+                    3 -> TaskFilter.COMPLETED
+                    else -> TaskFilter.ONGOING
+                }
+                viewModel.setFilter(selectedFilter)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+ }
         // Adapter for View Options Spinner
         val viewOptionsAdapter = ArrayAdapter(
             requireContext(),

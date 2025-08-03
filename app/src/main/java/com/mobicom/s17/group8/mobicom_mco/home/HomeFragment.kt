@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.auth.LandingActivity
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentHomeBinding
-
+import androidx.navigation.fragment.findNavController
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,14 +30,21 @@ import androidx.core.net.toUri
 import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
 import android.widget.PopupMenu
+import android.widget.Toast
 import com.bumptech.glide.signature.ObjectKey
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedDate
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedTime
 import java.io.File
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.navGraphViewModels
 import com.mobicom.s17.group8.mobicom_mco.auth.UserAuthViewModel
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskRepository
+import com.mobicom.s17.group8.mobicom_mco.task.TaskViewModelFactory
+import com.mobicom.s17.group8.mobicom_mco.task.TasksViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 
 class HomeFragment : Fragment() {
@@ -49,11 +56,11 @@ class HomeFragment : Fragment() {
     private lateinit var userDao: UserDao
     private val userAuthViewModel: UserAuthViewModel by activityViewModels()
 
-    private val homeViewModel: HomeViewModel by viewModels {
+    private val tasksViewModel: TasksViewModel by viewModels {
         val database = AppDatabase.getDatabase(requireContext())
         val repository = TaskRepository(database.taskDao(), database.taskListDao())
-        val userId = userAuthViewModel.currentUserId.value!!
-        HomeViewModelFactory(repository, userId)
+        val userId = userAuthViewModel.currentUserId.value ?: ""
+        TaskViewModelFactory(repository, userId)
     }
 
     private lateinit var homeTaskAdapter: HomeTaskAdapter
@@ -151,7 +158,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        homeTaskAdapter = HomeTaskAdapter()
+        homeTaskAdapter = HomeTaskAdapter(
+            onTaskChecked = { task, isChecked ->
+                tasksViewModel.onTaskCheckedChanged(task, isChecked)
+            },
+            onTaskClicked = { task ->
+                findNavController().navigate(R.id.nav_todo)
+            }
+        )
+
         binding.rvHomeTasks.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = homeTaskAdapter
@@ -159,8 +174,18 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        homeViewModel.upcomingTasks.observe(viewLifecycleOwner) { tasks ->
-            homeTaskAdapter.submitList(tasks)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    tasksViewModel.allTaskLists.collectLatest { taskLists ->
+                        homeTaskAdapter.submitTaskLists(taskLists)
+                    }
+                }
+
+                tasksViewModel.upcomingTasks.observe(viewLifecycleOwner) { tasks ->
+                    homeTaskAdapter.submitList(tasks)
+                }
+            }
         }
     }
 
