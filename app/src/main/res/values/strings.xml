@@ -30,9 +30,7 @@
     <string name="nav_study">Study</string>
     <string name="settings">Settings</string>
     <string name="rainfall">♪ Rainfall</string>
-    <string name="add_course">add course</string>
     <string name="delete_button">delete button</string>
-    <string name="add_a_course">Add a Course</string>
 
 
     <!-- To-do Page-->
@@ -69,44 +67,50 @@
 <!--        <item>Task List 1</item>-->
 <!--    </string-array>-->    
 
+    <!-- Course Page -->
+    <string name="add_course">Add Course</string>
+    <string name="course_title">Course Title</string>
+
     <!-- Decks Page -->
     <string name="decks_page">Decks</string>
-    <string name="backtoCourses">Back to Courses</string>
+    <string name="deck_favorite">Favorite</string>
     <string name="deck_name">Deck Name</string>
-    <string name="deck_star">Favorite</string>
     <string name="deck_stat">%1$s | %2$d flashcards</string>
-    <string name="deck_play">Play deck</string>
     <string name="deck_menu">Menu</string>
-    <string name="add_deck">Add deck</string>
+    <string name="add_deck">Title</string>
+    <string name="shuffle_all">Shuffle all</string>
 
     <!-- Deck menu -->
-    <string name="add_flashcards">Add flashcard/s</string>
     <string name="rename_deck">Rename</string>
     <string name="delete_deck">Delete</string>
-    <string name="export_deck">Export deck (.txt)</string>
+    <string name="export_deck_txt">Export deck (.txt)</string>
 
     <!-- Flashcards page -->
     <string name="flashcards_page">Flashcards</string>
-    <string name="backtoDecks">Back to Decks</string>
-    <string name="flashcard_number">#</string>
-    <string name="flashcard_question_label">Question</string>
-    <string name="flashcard_answer_label">Answer</string>
+    <string name="back_decks">Back to Decks</string>
+    <string name="filter_cards">Filter Cards</string>
+    <string name="switch_view">Switch View</string>
+    <string name="no_favcards">No favorite cards to display</string>
+    <string name="flashcard_question">Question</string>
+    <string name="flashcard_answer">Answer</string>
+    <string name="flashcard_favorite">Favorite this card</string>
     <string name="flashcard_menu">Menu</string>
     <string name="add_cards">Add Card/s</string>
+    <string name="clear">CLEAR</string>
+    <string name="cancel">CANCEL</string>
+    <string name="save">SAVE</string>
+    <string name="shuffle_deck">Shuffle deck</string>
 
-    <!-- Flashcard menu -->
+    <!-- Flashcard options strings -->
     <string name="edit_flashcard">Edit</string>
+    <string name="edit_flashcard_question">Question</string>
+    <string name="edit_flashcard_answer">Answer</string>
+    <string name="char_counter">%1$d / %2$d</string>
     <string name="delete_flashcard">Delete</string>
     <string name="copy_flashcard">Copy text</string>
-
-    <!-- Playing Flashcards -->
-    <string name="flashcard_favorite">Favorite this card</string>
-    <string name="continue_with_google">Continue with Google</string>
     
     <!-- Web client id -->
     <string name="default_web_client_id">330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com</string>
     <string name="ex_you_email_com">Ex. you@email.com</string>
     <string name="email">Email</string>
-
-
 </resources>
