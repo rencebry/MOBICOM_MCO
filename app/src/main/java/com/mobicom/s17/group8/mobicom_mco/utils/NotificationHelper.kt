@@ -1,4 +1,4 @@
-package com.mobicom.s17.group8.mobicom_mco.utils // A new 'utils' package is a good place for this
+package com.mobicom.s17.group8.mobicom_mco.utils
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

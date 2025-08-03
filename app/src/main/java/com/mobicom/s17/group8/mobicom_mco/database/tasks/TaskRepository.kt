@@ -58,4 +58,8 @@ class TaskRepository (
     suspend fun deleteTask(task: Task) {
         taskDao.deleteTask(task)
     }
+
+    fun getUpcomingTasks(userId: String, startDate: String, endDate: String): Flow<List<Task>> {
+        return taskDao.getUpcomingTasksForUser(userId, startDate, endDate)
+    }
 }

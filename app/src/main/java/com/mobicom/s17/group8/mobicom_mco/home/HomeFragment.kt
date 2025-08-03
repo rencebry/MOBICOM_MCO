@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.auth.LandingActivity
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentHomeBinding
-import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemTaskBinding
-import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
+
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -35,33 +34,11 @@ import com.bumptech.glide.signature.ObjectKey
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedDate
 import com.mobicom.s17.group8.mobicom_mco.utils.toFormattedTime
 import java.io.File
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import com.mobicom.s17.group8.mobicom_mco.auth.UserAuthViewModel
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskRepository
 
-// --- local adapter since adding tasks are not yet implemented ---
-class HomeTaskAdapter(private val tasks: List<Task>) : RecyclerView.Adapter<HomeTaskAdapter.TaskViewHolder>() {
-
-    inner class TaskViewHolder(val binding: ListItemTaskBinding) : RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val binding = ListItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return TaskViewHolder(binding)
-    }
-
-    @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val task = tasks[position]
-        holder.binding.apply {
-            val formattedDate = task.due.toFormattedDate()
-            val formattedTime = task.due.toFormattedTime()
-
-            taskNameTv.text = task.title
-            taskInfoTv.text = "task label | $formattedDate $formattedTime"
-            taskCheckbox.isChecked = (task.status == "completed")
-            //starredIv.visibility = if (task.isStarred) View.VISIBLE else View.GONE
-        }
-    }
-
-    override fun getItemCount() = tasks.size
-}
 
 class HomeFragment : Fragment() {
 
@@ -70,7 +47,16 @@ class HomeFragment : Fragment() {
     private val auth = Firebase.auth
     private val db = Firebase.firestore
     private lateinit var userDao: UserDao
+    private val userAuthViewModel: UserAuthViewModel by activityViewModels()
 
+    private val homeViewModel: HomeViewModel by viewModels {
+        val database = AppDatabase.getDatabase(requireContext())
+        val repository = TaskRepository(database.taskDao(), database.taskListDao())
+        val userId = userAuthViewModel.currentUserId.value!!
+        HomeViewModelFactory(repository, userId)
+    }
+
+    private lateinit var homeTaskAdapter: HomeTaskAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,23 +68,16 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        observeViewModel()
         loadAndObserveUserProfile()
         setDate()
 
         binding.ivSettings.setOnClickListener { view ->
-            showSettingsMenu(view) // Pass the settings icon view itself
+            showSettingsMenu(view)
         }
 
-//        binding.btnStartStudying.setOnClickListener {
-//            findNavController().navigate(R.id.nav_study)
-//        }
-
-        val tasksForToday = getPlaceholderTasks()
-        val homeTaskAdapter = HomeTaskAdapter(tasksForToday)
-        binding.rvHomeTasks.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = homeTaskAdapter
-        }
     }
 
     private fun loadAndObserveUserProfile() {
@@ -171,6 +150,20 @@ class HomeFragment : Fragment() {
             }
     }
 
+    private fun setupRecyclerView() {
+        homeTaskAdapter = HomeTaskAdapter()
+        binding.rvHomeTasks.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = homeTaskAdapter
+        }
+    }
+
+    private fun observeViewModel() {
+        homeViewModel.upcomingTasks.observe(viewLifecycleOwner) { tasks ->
+            homeTaskAdapter.submitList(tasks)
+        }
+    }
+
     private fun setDate() {
         val monthDayFormat = SimpleDateFormat("MMMM d", Locale.getDefault())
         val date = Date()
@@ -208,55 +201,6 @@ class HomeFragment : Fragment() {
             .show()
     }
 
-    private fun getPlaceholderTasks(): List<Task> {
-        return listOf(
-            Task(
-                id = "1",
-                userId = "user1",
-                tasklistId = "STCLOUD",
-                title = "Finals Exam",
-                status = "needsAction",
-                due = "2025-06-28T09:00:00Z",
-                notes = "Study all chapters for finals.",
-                updated = "2025-06-20T10:00:00Z",
-                completed = null,
-                parent = null,
-                position = "1",
-                isSynced = false,
-                isDeleted = false,
-            ),
-            Task(
-                id = "2",
-                userId = "user1",
-                tasklistId = "MOBICOM",
-                title = "MCO Presentation",
-                status = "needsAction",
-                due = "2025-06-30T14:00:00Z",
-                notes = "Prepare slides for MCO.",
-                updated = "2025-06-21T11:00:00Z",
-                completed = null,
-                parent = null,
-                position = "2",
-                isSynced = false,
-                isDeleted = false,
-            ),
-            Task(
-                id = "3",
-                userId = "user1",
-                tasklistId = "CSARCH2",
-                title = "Review for Quiz 2",
-                status = "needsAction",
-                due = "2025-07-02T08:00:00Z",
-                notes = "Focus on chapters 5-7.",
-                updated = "2025-06-22T12:00:00Z",
-                completed = null,
-                parent = null,
-                position = "3",
-                isSynced = false,
-                isDeleted = false,
-            )
-        )
-    }
 
     private fun showSettingsMenu(anchorView: View) {
         val popup = PopupMenu(requireContext(), anchorView)

@@ -22,4 +22,13 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE userId = :userId")
     fun getAllTasksForUser(userId: String): Flow<List<Task>>
+
+    @Query("""
+        SELECT * FROM tasks 
+        WHERE userId = :userId 
+        AND status = 'needsAction'  
+        AND due BETWEEN :startDate AND :endDate 
+        ORDER BY due ASC
+    """)
+    fun getUpcomingTasksForUser(userId: String, startDate: String, endDate: String): Flow<List<Task>>
 }
