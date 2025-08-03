@@ -113,11 +113,12 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
     private fun observeViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Coroutine to collect the list of task lists
                 launch {
                     viewModel.allTaskLists.collectLatest { taskLists ->
                         taskListAdapter.submitList(taskLists)
-                        if (viewModel.selectedTaskListId.value == null) {
+                        taskAdapter.submitTaskLists(taskLists)
+
+                        if (taskLists.isNotEmpty() && viewModel.selectedTaskListId.value == null) {
                             viewModel.selectTaskList(ALL_TASKS_ID)
                         }
                     }
@@ -125,10 +126,6 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
                 // Coroutine to collect tasks for the selected task list
                 launch {
                     viewModel.tasksForSelectedList.collectLatest { tasks ->
-                        val selectedId = viewModel.selectedTaskListId.value
-
-                        val selectedList = viewModel.allTaskLists.value.find { it.id == selectedId }
-                        taskAdapter.currentTaskListName = selectedList?.title ?: "Tasks"
                         taskAdapter.submitList(tasks)
                     }
                 }
