@@ -27,7 +27,7 @@ class CourseAdapter(
     override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
         val course = courses[position]
         holder.binding.apply {
-            tvCourseName.text = course.name
+            tvCourseTitle.text = course.courseTitle
             tvDeckCount.text = "${course.deckCount} decks"
 
             val color = ContextCompat.getColor(root.context, course.colorResId)

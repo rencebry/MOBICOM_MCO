@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
+
+    <!-- EDIT QUESTION -->
+    <EditText
+        android:id="@+id/etQuestion"
+        android:hint="@string/edit_flashcard_question"
+        android:inputType="textMultiLine"
+        android:maxLines="5"
+        android:minHeight="48dp"
+        android:maxLength="160"
+        android:scrollbars="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:importantForAutofill="no"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed" />
+
+    <!-- QUESTION CHARACTER LIMIT -->
+    <TextView
+        android:id="@+id/questionCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 / 160"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etQuestion" />
+
+    <!-- EDIT ANSWER -->
+    <EditText
+        android:id="@+id/etAnswer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_flashcard_answer"
+        android:importantForAutofill="no"
+        android:inputType="textMultiLine"
+        android:maxLength="250"
+        android:maxLines="5"
+        android:minHeight="48dp"
+        android:scrollbars="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/questionCounter" />
+
+    <!-- ANSWER CHARACTER LIMIT -->
+    <TextView
+        android:id="@+id/answerCounter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 / 250"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etAnswer" />
+</androidx.constraintlayout.widget.ConstraintLayout>
