@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flashcardContainer"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:layout_marginBottom="100sp">
+
+    <!-- QUESTION (FRONT SIDE) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/front"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/button_filled_background">
+
+        <!-- QUESTION -->
+        <TextView
+            android:id="@+id/flashcardQuestion"
+            android:text="@string/flashcard_question"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textColorLink="@color/text_primary"
+            android:padding="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- FAVORITE CARD BUTTON -->
+        <ImageButton
+        android:id="@+id/favoriteCard"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:buttonTint="@color/black"
+        android:clickable="true"
+        android:contentDescription="@string/flashcard_favorite"
+        android:focusable="true"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:src="@drawable/ic_star_disabled"
+        app:layout_constraintEnd_toStartOf="@+id/flashcard_options"
+        app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- OPTIONS BUTTON -->
+        <ImageButton
+            android:id="@+id/flashcard_options"
+            android:layout_width="45dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:buttonTint="@color/black"
+            android:clickable="true"
+            android:contentDescription="@string/flashcard_menu"
+            android:focusable="true"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            android:src="@drawable/ic_menu"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- ANSWER (BACK SIDE) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/button_filled_background"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/flashcardAnswer"
+            android:text="@string/flashcard_answer"
+            android:textSize="20sp"
+            android:textColorLink="@color/text_primary"
+            android:padding="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
