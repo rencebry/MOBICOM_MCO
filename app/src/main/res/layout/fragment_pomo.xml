@@ -38,13 +38,11 @@
         android:id="@+id/tvTaskName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/edittext_background"
         android:backgroundTint="#809FAB"
         android:paddingStart="12dp"
         android:paddingTop="4dp"
         android:paddingEnd="12dp"
         android:paddingBottom="4dp"
-        android:text="Task Name"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,16 +68,6 @@
 
 
     <!-- buttons -->
-    <ImageView
-        android:id="@+id/btnReset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_reset"
-        app:layout_constraintBottom_toBottomOf="@id/btnStopStart"
-        app:layout_constraintEnd_toStartOf="@id/btnStopStart"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btnStopStart" />
 
     <Button
         android:id="@+id/btnStopStart"
@@ -87,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="80dp"
         android:text="Start"
         android:textColorLink="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -102,6 +90,17 @@
         app:layout_constraintBottom_toBottomOf="@id/btnStopStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btnStopStart"
+        app:layout_constraintTop_toTopOf="@id/btnStopStart" />
+
+    <ImageView
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_reset"
+        app:layout_constraintBottom_toBottomOf="@id/btnStopStart"
+        app:layout_constraintEnd_toStartOf="@id/btnStopStart"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnStopStart" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
