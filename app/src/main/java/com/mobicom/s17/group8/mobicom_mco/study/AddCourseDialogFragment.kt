@@ -23,7 +23,7 @@ class AddCourseDialogFragment : DialogFragment() {
 
     // Get a reference to the same ViewModel the fragment is using
     private val viewModel: StudyViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(StudyViewModel::class.java)
+        ViewModelProvider(requireActivity())[StudyViewModel::class.java]
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -37,12 +37,10 @@ class AddCourseDialogFragment : DialogFragment() {
         setupColorPickers()
 
         binding.btnSave.setOnClickListener {
-            val courseName = binding.etCourseName.text.toString()
-
             val selectedColorId = getSelectedColor()
             val newCourse = Course(
-                id = UUID.randomUUID().toString(),
-                name = courseName,
+                courseId = UUID.randomUUID().toString(),
+                courseTitle = binding.etCourseTitle.text.toString().trim(),
                 deckCount = 0, // New courses start with 0 decks
                 colorResId = selectedColorId
             )
@@ -50,8 +48,6 @@ class AddCourseDialogFragment : DialogFragment() {
             viewModel.addCourse(newCourse)
             dismiss()
         }
-
-
     }
 
     private fun setupColorPickers() {
@@ -85,7 +81,6 @@ class AddCourseDialogFragment : DialogFragment() {
         super.onStart()
         // dialog window
         dialog?.window?.apply {
-
             setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
