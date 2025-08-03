@@ -39,29 +39,38 @@
 
         <!-- Course Details -->
         <TextView
-            android:id="@+id/tvCourseName"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_course_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginTop="9dp"
+            android:layout_marginEnd="12dp"
             android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/tvDeckCount"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintBottom_toTopOf="@+id/tvDeckCount"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/viewColor"
             tools:text="STCLOUD" />
 
+        <!-- Delete button  -->
         <TextView
             android:id="@+id/tvDeckCount"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:textColor="@color/black"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvCourseName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_course_title"
             tools:text="10 decks" />
 
-        <!-- Delete button  -->
         <ImageView
             android:contentDescription="@string/delete_button"
             android:id="@+id/btnDelete"
@@ -78,6 +87,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white"
             tools:visibility="visible" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
