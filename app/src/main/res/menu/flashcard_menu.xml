@@ -7,6 +7,6 @@
         android:id="@+id/delete_flashcard"
         android:title="@string/delete_flashcard" />
     <item
-        android:id="@+id/copy_flashcard"
+        android:id="@+id/copy_text_flashcard"
         android:title="@string/copy_flashcard" />
 </menu>
