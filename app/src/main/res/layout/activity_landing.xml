@@ -40,7 +40,7 @@
         android:layout_marginStart="@dimen/large_margin"
         android:layout_marginTop="268dp"
         android:layout_marginEnd="@dimen/large_margin"
-        android:text="@string/continue_with_google"
+        android:text="Sign up with Google"
         android:textColor="@color/black"
         app:iconTint="@null"
         android:backgroundTint="@color/white"

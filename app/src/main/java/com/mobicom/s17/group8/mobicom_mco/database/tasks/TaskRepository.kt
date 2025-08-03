@@ -78,4 +78,8 @@ class TaskRepository (
     fun getOngoingTasksInList(taskListId: String, currentDate: String): Flow<List<Task>> {
         return taskDao.getOngoingTasksInList(taskListId, currentDate)
     }
+
+    fun getAllTasksForUser(userId: String): Flow<List<Task>> {
+        return taskDao.getAllTasksForUser(userId)
+    }
 }

@@ -83,6 +83,7 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
 
         taskListAdapter = TaskListAdapter (
             onTaskListClicked = { taskList -> viewModel.selectTaskList(taskList.id)},
+            onAllTasksClicked = { viewModel.selectTaskList(ALL_TASKS_ID) },
             onAddNewListClicked = { TasklistAddDialogFragment().show(childFragmentManager, "AddTaskListDialog") }
         )
 
@@ -116,11 +117,8 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
                 launch {
                     viewModel.allTaskLists.collectLatest { taskLists ->
                         taskListAdapter.submitList(taskLists)
-                        // Automatically select the first list if non is selected
-                        if (taskLists.isNotEmpty() && viewModel.tasksForSelectedList.value.isEmpty()) {
-                            if (viewModel.tasksForSelectedList.value == null) { // TODO: double check this condition if still needed
-                                viewModel.selectTaskList(taskLists.first().id)
-                            }
+                        if (viewModel.selectedTaskListId.value == null) {
+                            viewModel.selectTaskList(ALL_TASKS_ID)
                         }
                     }
                 }

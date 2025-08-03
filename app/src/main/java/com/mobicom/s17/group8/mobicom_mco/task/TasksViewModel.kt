@@ -68,7 +68,7 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
             initialValue = emptyList()
         )
 
-    private val _selectedTaskListId = MutableStateFlow<String?>(null)
+    private val _selectedTaskListId = MutableStateFlow<String?>(ALL_TASKS_ID)
     val selectedTaskListId : StateFlow<String?> = _selectedTaskListId.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -77,7 +77,9 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
     }.flatMapLatest { (listId, filter) ->
         if (listId == null) {
             flowOf(emptyList())
-        } else {
+        } else if (listId == ALL_TASKS_ID) {
+            repository.getAllTasksForUser(userId)
+        }else {
             val currentDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
             when (filter) {
                 TaskFilter.ONGOING -> repository.getOngoingTasksInList(listId, currentDate)
