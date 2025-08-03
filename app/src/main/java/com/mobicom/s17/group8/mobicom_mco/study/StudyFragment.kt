@@ -9,13 +9,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentStudyBinding
 
-
 class StudyFragment : Fragment() {
 
     private var _binding: FragmentStudyBinding? = null
     private val binding get() = _binding!!
     private val viewModel: StudyViewModel by lazy {
-        ViewModelProvider(this).get(StudyViewModel::class.java)
+        ViewModelProvider(requireActivity())[StudyViewModel::class.java]
     }
     private lateinit var courseAdapter: CourseAdapter
 
@@ -43,12 +42,12 @@ class StudyFragment : Fragment() {
     private fun setupRecyclerView() {
         courseAdapter = CourseAdapter(
             onCourseClicked = { course ->
-                val action = StudyFragmentDirections.actionStudyFragmentToDeckListFragment(course.id, course.name)
+                val action = StudyFragmentDirections.actionStudyFragmentToDeckListFragment(course.courseId, course.courseTitle)
                 findNavController().navigate(action)
             },
             onDeleteClicked = { course ->
                 // TODO: Show confirm delete dialog
-                viewModel.deleteCourse(course.id)
+                viewModel.deleteCourse(course.courseId)
             }
         )
         binding.rvCourses.adapter = courseAdapter
