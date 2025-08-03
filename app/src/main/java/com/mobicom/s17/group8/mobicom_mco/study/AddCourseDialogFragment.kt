@@ -2,7 +2,6 @@ package com.mobicom.s17.group8.mobicom_mco.study
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
