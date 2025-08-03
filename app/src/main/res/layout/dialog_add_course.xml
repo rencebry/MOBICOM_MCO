@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/add_a_course"
+        android:text="@string/add_course"
         android:textColor="@color/text_primary"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -21,11 +21,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Course Name"
+        android:text="@string/course_title"
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/etCourseName"
+        android:id="@+id/et_course_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -43,12 +43,12 @@
 
     <RadioGroup
         android:id="@+id/colorPickerGroup"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
-
+        android:gravity="center_horizontal"
+        android:layoutMode="clipBounds"
+        android:orientation="horizontal">
 
         <RadioButton
             android:id="@+id/colorBlue"
@@ -95,11 +95,8 @@
             android:id="@+id/colorMint"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="8dp"
             android:background="@drawable/color_picker_selector"
             android:button="@null" />
-
-
     </RadioGroup>
 
     <Button
