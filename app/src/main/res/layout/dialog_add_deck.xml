@@ -1,86 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:background="@drawable/rounded_background"
+    android:orientation="vertical"
+    android:padding="24dp">
 
-    <!-- ADD DECK -->
-    <EditText
-        android:id="@+id/etDeckTitle"
-        android:hint="@string/add_deck"
-        android:inputType="textMultiLine"
-        android:maxLines="3"
-        android:minHeight="48dp"
-        android:maxLength="55"
-        android:scrollbars="vertical"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:importantForAutofill="no"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_chainStyle="packed" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add a Deck"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:padding="4dp"
+            android:src="@drawable/ic_close" />
+    </FrameLayout>
 
-    <!-- DECK TITLE CHARACTER LIMIT -->
     <TextView
-        android:id="@+id/deckTitleCounter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0 / 55"
-        android:textColor="@color/gray"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etDeckTitle" />
+        android:layout_marginTop="24dp"
+        android:text="Deck Title"
+        android:textStyle="bold" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/buttonRow"
-        android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilDeckTitle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/deckTitleCounter">
-
-        <Button
-            android:id="@+id/btnClear"
-            android:layout_width="wrap_content"
+        android:layout_marginTop="8dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="55">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDeckTitle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:fontFamily="sans-serif"
-            android:text="@string/clear"
-            android:textColor="#5A8392"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:gravity="top"
+            android:hint="e.g., Chapter 1: Introduction"
+            android:inputType="textCapSentences"
+            android:maxLength="55"
+            android:minLines="2" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btnCancel"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:fontFamily="sans-serif"
-            android:text="@string/cancel"
-            android:textColor="#5A8392"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSave" />
-
-        <Button
-            android:id="@+id/btnSave"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:enabled="false"
-            android:fontFamily="sans-serif"
-            android:text="@string/save"
-            android:textColor="@color/gray"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="#DCE5D8"
+        android:enabled="false"
+        android:text="Save"
+        android:textColor="@color/text_primary"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"/>
+</LinearLayout>

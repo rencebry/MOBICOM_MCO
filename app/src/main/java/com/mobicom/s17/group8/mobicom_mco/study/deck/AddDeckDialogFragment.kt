@@ -1,25 +1,27 @@
 package com.mobicom.s17.group8.mobicom_mco.study.deck
 
-import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.toColorInt
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
 
 class AddDeckDialogFragment : DialogFragment() {
 
-    private lateinit var binding: DialogAddDeckBinding
+    private var _binding: DialogAddDeckBinding? = null
+    private val binding get() = _binding!!
 
+    // activityViewModels is a great way to get the shared ViewModel
     private val viewModel: StudyViewModel by activityViewModels()
-
 
     // Companion object for safe argument passing
     companion object {
@@ -31,49 +33,55 @@ class AddDeckDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogAddDeckBinding.inflate(layoutInflater)
-        val courseId = requireArguments().getString(ARG_COURSE_ID)!!
+    // Use onCreateView to inflate the view
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = DialogAddDeckBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        val deckTitleLimit = 55
-        binding.deckTitleCounter.text = getString(R.string.char_counter, 0, deckTitleLimit)
+    // Use onViewCreated for all logic and view setup
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        // Disable save button initially
-        binding.btnSave.isEnabled = false
-        binding.btnSave.setTextColor(requireContext().getColor(android.R.color.darker_gray))
-
-        binding.etDeckTitle.addTextChangedListener { text ->
-            val length = text?.length ?: 0
-            binding.deckTitleCounter.text = getString(R.string.char_counter, length, deckTitleLimit)
-
-            // Enable/disable save button based on input
-            val isEnabled = text.toString().trim().isNotEmpty()
-            binding.btnSave.isEnabled = isEnabled
-            binding.btnSave.setTextColor(
-                if (isEnabled) "#5A8392".toColorInt() else requireContext().getColor(android.R.color.darker_gray)
-            )
+        val courseId = requireArguments().getString(ARG_COURSE_ID)
+        if (courseId == null) {
+            // If there's no courseId, we can't save, so just dismiss.
+            dismiss()
+            return
         }
 
-        binding.btnClear.setOnClickListener { binding.etDeckTitle.setText("") }
-        binding.btnCancel.setOnClickListener { dismiss() }
+        setupListeners(courseId)
+    }
+
+    private fun setupListeners(courseId: String) {
+        binding.etDeckTitle.addTextChangedListener { text ->
+            // Enable/disable save button based on whether the input is empty
+            binding.btnSave.isEnabled = !text.isNullOrBlank()
+        }
+
+        binding.btnClose.setOnClickListener {
+            dismiss()
+        }
 
         binding.btnSave.setOnClickListener {
             val deckTitle = binding.etDeckTitle.text.toString().trim()
             viewModel.addDeck(courseId, deckTitle)
             dismiss()
         }
-
-        return AlertDialog.Builder(requireContext())
-            .setTitle("Add Deck")
-            .setView(binding.root)
-            .create()
     }
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-        listOf(binding.btnClear, binding.btnCancel, binding.btnSave).forEach {
-            it.background = null
+        // This correctly sizes and styles the dialog window
+        dialog?.window?.apply {
+            val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
+            setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

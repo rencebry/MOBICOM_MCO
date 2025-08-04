@@ -1,28 +1,27 @@
 package com.mobicom.s17.group8.mobicom_mco.study.deck
 
-import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.toColorInt
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import com.mobicom.s17.group8.mobicom_mco.R
-import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding // Still reusing this layout
+import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding // Use the new binding
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
 
 class RenameDeckDialogFragment : DialogFragment() {
 
-    private lateinit var binding: DialogAddDeckBinding
+    private var _binding: DialogAddDeckBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: StudyViewModel by activityViewModels()
 
-
-    // --- NEW: Companion object for safe argument passing ---
+    // Companion object for safe argument passing
     companion object {
         private const val ARG_DECK_ID = "deck_id_to_rename"
         fun newInstance(deckId: String): RenameDeckDialogFragment {
@@ -32,65 +31,61 @@ class RenameDeckDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogAddDeckBinding.inflate(layoutInflater)
-        val deckId = requireArguments().getString(ARG_DECK_ID)
+    // Use onCreateView to inflate the view
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = DialogAddDeckBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        // --- FETCH THE DECK OBJECT FROM THE VIEWMODEL ---
+    // Use onViewCreated for all logic and view setup
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val deckId = requireArguments().getString(ARG_DECK_ID)
         val deckToRename = deckId?.let { viewModel.getDeckById(it) }
 
         if (deckToRename == null) {
-            // This is a safety check. If the deck was deleted while the menu was open,
-            // we just show a message and dismiss.
-            Toast.makeText(requireContext(), "Deck not found. It may have been deleted.", Toast.LENGTH_SHORT).show()
-            // We need to dismiss in a separate handler because onCreateDialog is too early.
-            parentFragmentManager.beginTransaction().remove(this).commit()
-            return super.onCreateDialog(savedInstanceState)!!
+            Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
+            dismiss()
+            return
         }
 
-        // --- POPULATE THE UI ---
-        val deckTitleLimit = 55
+        // Pre-populate the EditText with the current deck title
         binding.etDeckTitle.setText(deckToRename.deckTitle)
-        binding.deckTitleCounter.text = getString(R.string.char_counter, deckToRename.deckTitle.length, deckTitleLimit)
+        // Move cursor to the end of the text
+        binding.etDeckTitle.setSelection(deckToRename.deckTitle.length)
 
-        // Logic for enabling/disabling the save button
-        updateSaveButtonState()
-        binding.etDeckTitle.addTextChangedListener {
-            updateSaveButtonState()
-            val length = it?.length ?: 0
-            binding.deckTitleCounter.text = getString(R.string.char_counter, length, deckTitleLimit)
+        setupListeners(deckToRename)
+    }
+
+    private fun setupListeners(deckToRename: com.mobicom.s17.group8.mobicom_mco.database.study.Deck) {
+        // Enable/disable the save button based on input
+        binding.etDeckTitle.addTextChangedListener { text ->
+            binding.btnSave.isEnabled = !text.isNullOrBlank()
         }
 
-        binding.btnClear.setOnClickListener { binding.etDeckTitle.setText("") }
-        binding.btnCancel.setOnClickListener { dismiss() }
+        binding.btnClose.setOnClickListener {
+            dismiss()
+        }
 
         binding.btnSave.setOnClickListener {
             val newTitle = binding.etDeckTitle.text.toString().trim()
             viewModel.renameDeck(deckToRename, newTitle)
             dismiss()
         }
-
-        return AlertDialog.Builder(requireContext())
-            .setTitle("Rename Deck")
-            .setView(binding.root)
-            .create()
-    }
-
-    private fun updateSaveButtonState() {
-        val title = binding.etDeckTitle.text.toString().trim()
-        val isEnabled = title.isNotEmpty()
-        binding.btnSave.isEnabled = isEnabled
-        binding.btnSave.setTextColor(
-            if (isEnabled) "#5A8392".toColorInt()
-            else requireContext().getColor(android.R.color.darker_gray)
-        )
     }
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-        listOf(binding.btnClear, binding.btnCancel, binding.btnSave).forEach {
-            it.background = null
+        dialog?.window?.apply {
+            val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
+            setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
