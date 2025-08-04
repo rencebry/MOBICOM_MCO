@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,23 +69,7 @@ class FlashcardListFragment : Fragment() {
                 observeData()
             } else {
                 Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun observeData() {
-        args.deckId?.let { viewModel.refreshFlashcardsForDeck(it) }
-
-        args.deckId?.let {
-            viewModel.getFlashcardsForDeck(it).observe(viewLifecycleOwner) { flashcardsFromDb ->
-                currentFlashcards = flashcardsFromDb ?: emptyList()
-
-                val initialList = if (args.shuffle) {
-                    currentFlashcards.shuffled()
-                } else {
-                    currentFlashcards
-                }
-                updateAdapterWithList(initialList)
+                findNavController().popBackStack()
             }
         }
     }
@@ -106,18 +91,29 @@ class FlashcardListFragment : Fragment() {
         binding.viewSwitch.setImageResource(if (isCompressedView) R.drawable.expanded else R.drawable.compressed)
     }
 
+    private fun observeData() {
+        val deckId = args.deckId ?: return
+
+        viewModel.flashcards.observe(viewLifecycleOwner) { flashcardsFromFirestore ->
+            currentFlashcards = flashcardsFromFirestore ?: emptyList()
+
+            val listToDisplay = if (args.shuffle) currentFlashcards.shuffled() else currentFlashcards
+            updateAdapterWithList(listToDisplay)
+        }
+
+        viewModel.loadFlashcardsForDeck(deckId)
+    }
 
     private fun setupClickListeners() {
-        val isCourseShuffle = args.shuffle && args.deckId == "course_play_dummy"
+        val deckId = args.deckId!! // Safe to use !! here
+        val isCourseShuffle = args.shuffle && deckId == "course_play_dummy"
 
         if (!isCourseShuffle) {
             binding.fabAddCards.setOnClickListener {
                 val courseId = currentDeck?.courseId
                 if (courseId != null) {
-                    args.deckId?.let { it1 ->
-                        AddFlashcardDialogFragment.newInstance(it1, courseId)
-                            .show(parentFragmentManager, "add_flashcard")
-                    }
+                    AddFlashcardDialogFragment.newInstance(deckId, courseId)
+                        .show(parentFragmentManager, "add_flashcard")
                 } else {
                     Toast.makeText(requireContext(), "Could not determine course.", Toast.LENGTH_SHORT).show()
                 }
@@ -151,8 +147,6 @@ class FlashcardListFragment : Fragment() {
         }
     }
 
-
-
     private fun createAdapter(compressed: Boolean): RecyclerView.Adapter<*> {
         return if (compressed) {
             FlashcardAdapterCompressed(
@@ -175,18 +169,21 @@ class FlashcardListFragment : Fragment() {
         }
     }
 
+
     private fun updateAdapterWithList(list: List<Flashcard>) {
+        val filteredList = if (showOnlyFavorites) {
+            list.filter { it.isFavorite }
+        } else {
+            list
+        }
+
+        binding.tvNoFavCards.visibility = if (showOnlyFavorites && filteredList.isEmpty()) View.VISIBLE else View.GONE
+
         when (val currentAdapter = adapter) {
-            is FlashcardAdapterExpanded -> {
-                currentAdapter.setShowOnlyFavorites(showOnlyFavorites, list)
-                currentAdapter.resetAllCardsToFront()
-            }
-            is FlashcardAdapterCompressed -> {
-                currentAdapter.setShowOnlyFavorites(showOnlyFavorites, list)
-            }
+            is FlashcardAdapterExpanded -> currentAdapter.submitList(filteredList)
+            is FlashcardAdapterCompressed -> currentAdapter.submitList(filteredList)
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

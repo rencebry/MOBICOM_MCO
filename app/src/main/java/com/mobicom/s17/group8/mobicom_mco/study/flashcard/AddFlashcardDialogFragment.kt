@@ -2,6 +2,7 @@ package com.mobicom.s17.group8.mobicom_mco.study.flashcard
 
 import android.graphics.Color
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddFlashcardBinding
 import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
+import kotlinx.coroutines.launch
 
 class AddFlashcardDialogFragment : DialogFragment() {
 
@@ -78,10 +80,12 @@ class AddFlashcardDialogFragment : DialogFragment() {
             val answer = binding.etAnswer.text.toString().trim()
 
             if (question.isNotEmpty() && answer.isNotEmpty()) {
-                viewModel.addFlashcard(deckId, courseId, question, answer)
-
-                Toast.makeText(requireContext(), "Flashcard saved!", Toast.LENGTH_SHORT).show()
-                dismiss()
+                lifecycleScope.launch {
+                    val job = viewModel.addFlashcardAsync(deckId, courseId, question, answer)
+                    job.join()
+                    Toast.makeText(requireContext(), "Flashcard saved!", Toast.LENGTH_SHORT).show()
+                    dismiss()
+                }
             } else {
                 Toast.makeText(requireContext(), "Please fill out both question and answer.", Toast.LENGTH_SHORT).show()
             }

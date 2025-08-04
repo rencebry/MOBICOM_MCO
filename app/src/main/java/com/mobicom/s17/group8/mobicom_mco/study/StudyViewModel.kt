@@ -35,10 +35,12 @@ class StudyViewModel(
 
     private var currentDecksSource: LiveData<List<Deck>>? = null
 
-    private val _flashcardsForCurrentDeck = MediatorLiveData<List<Flashcard>>()
-    val flashcardsForCurrentDeck: LiveData<List<Flashcard>> = _flashcardsForCurrentDeck
+    private val _flashcards = MutableLiveData<List<Flashcard>>()
+    val flashcards: LiveData<List<Flashcard>> = _flashcards
 
     private var currentFlashcardsSource: LiveData<List<Flashcard>>? = null
+    private val _flashcardsLiveData = MutableLiveData<List<Flashcard>>()
+    val flashcardsLiveData: LiveData<List<Flashcard>> get() = _flashcardsLiveData
 
     init {
         // When the ViewModel is first created, refresh the top-level courses
@@ -115,6 +117,13 @@ class StudyViewModel(
         }
     }
 
+    fun loadFlashcardsForDeck(deckId: String) {
+        viewModelScope.launch {
+            val fetchedFlashcards = repository.getFlashcardsForDeckFromFirestore(deckId)
+            _flashcards.postValue(fetchedFlashcards)
+        }
+    }
+
     // --- FLASHCARD FUNCTIONS ---
     fun getFlashcardsForDeck(deckId: String): LiveData<List<Flashcard>> {
         // Directly return the LiveData from the repository
@@ -128,6 +137,18 @@ class StudyViewModel(
         }
     }
 
+    fun addFlashcardAsync(deckId: String, courseId: String, question: String, answer: String) = viewModelScope.launch {
+        val newFlashcard = Flashcard(
+            flashcardId = UUID.randomUUID().toString(),
+            deckId = deckId,
+            courseId = courseId,
+            question = question,
+            answer = answer
+        )
+        repository.addFlashcard(newFlashcard)
+    }
+
+
     fun addFlashcard(deckId: String, courseId: String, question: String, answer: String) {
         viewModelScope.launch {
             val newFlashcard = Flashcard(
@@ -138,18 +159,21 @@ class StudyViewModel(
                 answer = answer
             )
             repository.addFlashcard(newFlashcard)
+            loadFlashcardsForDeck(deckId)
         }
     }
 
     fun updateFlashcard(flashcard: Flashcard) {
         viewModelScope.launch {
             repository.updateFlashcard(flashcard)
+            loadFlashcardsForDeck(flashcard.deckId)
         }
     }
 
     fun deleteFlashcard(flashcard: Flashcard) {
         viewModelScope.launch {
             repository.deleteFlashcard(flashcard)
+            loadFlashcardsForDeck(flashcard.deckId)
         }
     }
 

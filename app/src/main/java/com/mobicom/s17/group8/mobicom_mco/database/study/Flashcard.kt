@@ -19,8 +19,8 @@ import androidx.room.ColumnInfo
 @Parcelize
 data class Flashcard(
     @PrimaryKey val flashcardId: String = "",
-    @ColumnInfo(name = "deckId") val deckId: String = "",
-    @ColumnInfo(name = "courseId") val courseId: String = "",
+    val deckId: String = "",
+    val courseId: String = "",
     val question: String = "",
     val answer: String = "",
     val isFavorite: Boolean = false

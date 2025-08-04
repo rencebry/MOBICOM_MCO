@@ -112,22 +112,25 @@ class StudyRepository(
         return flashcardDao.getFlashcardsForCourse(courseId)
     }
 
-    suspend fun addFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
+    suspend fun getFlashcardsForDeckFromFirestore(deckId: String): List<Flashcard> = withContext(Dispatchers.IO) {
         try {
-            Log.d("StudyRepository", "Attempting to add flashcard to Firestore and Room. Flashcard: $flashcard")
-            flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await()
-            Log.d("StudyRepository", "Flashcard successfully written to Firestore: ${flashcard.flashcardId}")
-
-            flashcardDao.insertFlashcard(flashcard)
-            Log.d("StudyRepository", "Flashcard successfully inserted into Room: ${flashcard.flashcardId}")
-
-            updateDeckCardCount(flashcard.deckId)
-            Log.d("StudyRepository", "Deck card count updated for deck: ${flashcard.deckId}")
-
+            val snapshot = flashcardsCollection.whereEqualTo("deckId", deckId).get().await()
+            return@withContext snapshot.toObjects(Flashcard::class.java)
         } catch (e: Exception) {
-            Log.e("StudyRepository", "CRITICAL ERROR adding flashcard ${flashcard.flashcardId}: ${e.message}", e)
-
+            Log.e("StudyRepository", "Error fetching flashcards from Firestore", e)
+            return@withContext emptyList() // Return an empty list on error
         }
+    }
+
+
+    suspend fun addFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
+        flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await()
+        try {
+            flashcardDao.insertFlashcard(flashcard)
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Failed to cache flashcard in Room, but it's saved in Firestore.", e)
+        }
+        updateDeckCardCount(flashcard.deckId)
     }
 
     suspend fun insertFlashcard(flashcard: Flashcard) {
@@ -136,24 +139,14 @@ class StudyRepository(
     }
 
     suspend fun updateFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
-        try {
-            flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await() // Use set for simplicity
-            flashcardDao.updateFlashcard(flashcard)
-            Log.d("StudyRepository", "Flashcard updated: ${flashcard.flashcardId}")
-        } catch (e: Exception) {
-            Log.e("StudyRepository", "Error updating flashcard ${flashcard.flashcardId}: ${e.message}", e)
-        }
+        flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await()
+        flashcardDao.updateFlashcard(flashcard)
     }
 
     suspend fun deleteFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
-        try {
-            flashcardsCollection.document(flashcard.flashcardId).delete().await()
-            flashcardDao.deleteFlashcardById(flashcard.flashcardId)
-            Log.d("StudyRepository", "Flashcard deleted: ${flashcard.flashcardId}")
-            updateDeckCardCount(flashcard.deckId)
-        } catch (e: Exception) {
-            Log.e("StudyRepository", "Error deleting flashcard ${flashcard.flashcardId}: ${e.message}", e)
-        }
+        flashcardsCollection.document(flashcard.flashcardId).delete().await()
+        flashcardDao.deleteFlashcardById(flashcard.flashcardId)
+        updateDeckCardCount(flashcard.deckId)
     }
 
     suspend fun getFlashcardsForDeckSync(deckId: String): List<Flashcard> = withContext(Dispatchers.IO) {
