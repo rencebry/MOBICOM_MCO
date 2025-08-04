@@ -11,8 +11,10 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding // Use the new binding
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import kotlinx.coroutines.launch
 
 class RenameDeckDialogFragment : DialogFragment() {
 
@@ -37,25 +39,28 @@ class RenameDeckDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    // Use onViewCreated for all logic and view setup
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val deckId = requireArguments().getString(ARG_DECK_ID)
-        val deckToRename = deckId?.let { viewModel.getDeckById(it) }
-
-        if (deckToRename == null) {
-            Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
+        if (deckId == null) {
             dismiss()
             return
         }
 
-        // Pre-populate the EditText with the current deck title
-        binding.etDeckTitle.setText(deckToRename.deckTitle)
-        // Move cursor to the end of the text
-        binding.etDeckTitle.setSelection(deckToRename.deckTitle.length)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val deckToRename = viewModel.getDeckById(deckId)
 
-        setupListeners(deckToRename)
+            if (deckToRename == null) {
+                Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
+                dismiss()
+            } else {
+                // Populate the UI and set up listeners now that we have the data
+                binding.etDeckTitle.setText(deckToRename.deckTitle)
+                binding.etDeckTitle.setSelection(deckToRename.deckTitle.length)
+                setupListeners(deckToRename)
+            }
+        }
     }
 
     private fun setupListeners(deckToRename: com.mobicom.s17.group8.mobicom_mco.database.study.Deck) {

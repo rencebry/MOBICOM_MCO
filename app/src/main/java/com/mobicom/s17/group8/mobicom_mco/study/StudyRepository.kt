@@ -82,6 +82,10 @@ class StudyRepository(
         deckDao.deleteDeckById(deck.deckId)
     }
 
+    suspend fun getDeckById(deckId: String): Deck? = withContext(Dispatchers.IO) {
+        deckDao.getDeckById(deckId)
+    }
+
     // --- FLASHCARD DATA ---
     fun getFlashcardsForDeck(deckId: String): LiveData<List<Flashcard>> {
         return flashcardDao.getFlashcardsForDeck(deckId)

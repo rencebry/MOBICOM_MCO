@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +18,7 @@ import com.mobicom.s17.group8.mobicom_mco.database.study.Deck
 import com.mobicom.s17.group8.mobicom_mco.database.study.Flashcard
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentFlashcardListBinding
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import kotlinx.coroutines.launch
 
 class FlashcardListFragment : Fragment() {
     private var _binding: FragmentFlashcardListBinding? = null
@@ -46,11 +49,19 @@ class FlashcardListFragment : Fragment() {
             return // Stop execution if there's no ID
         }
 
-        currentDeck = studyViewModel.getDeckById(deckId)
+        viewLifecycleOwner.lifecycleScope.launch {
+            currentDeck = studyViewModel.getDeckById(deckId)
 
-        setupViews()
-        setupClickListeners()
-        observeData()
+            if (currentDeck != null) {
+                (activity as? AppCompatActivity)?.supportActionBar?.title = currentDeck?.deckTitle
+
+                setupViews()
+                setupClickListeners()
+                observeData()
+            } else {
+                Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupViews() {

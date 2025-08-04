@@ -20,4 +20,7 @@ interface DeckDao {
 
     @Query("SELECT * FROM decks WHERE courseId = :courseId ORDER BY dateCreated DESC")
     fun getDecksForCourse(courseId: String): LiveData<List<Deck>>
+
+    @Query("SELECT * FROM decks WHERE deckId = :deckId LIMIT 1")
+    suspend fun getDeckById(deckId: String): Deck?
 }

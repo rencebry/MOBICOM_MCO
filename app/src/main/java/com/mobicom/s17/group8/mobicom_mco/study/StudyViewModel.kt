@@ -60,8 +60,8 @@ class StudyViewModel(
         }
     }
 
-    fun getDeckById(deckId: String): Deck? {
-        return _allDecks.value?.find { it.deckId == deckId }
+    suspend fun getDeckById(deckId: String): Deck? {
+        return repository.getDeckById(deckId)
     }
 
     fun addDeck(courseId: String, deckTitle: String) {
@@ -90,6 +90,8 @@ class StudyViewModel(
             repository.deleteDeck(deck)
         }
     }
+
+
 
     fun getDecksForCourse(courseId: String): LiveData<List<Deck>> {
         viewModelScope.launch {
