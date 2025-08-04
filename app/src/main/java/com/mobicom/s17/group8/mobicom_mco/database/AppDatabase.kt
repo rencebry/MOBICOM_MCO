@@ -4,24 +4,34 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-//import androidx.sqlite.db.SupportSQLiteDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.study.CourseDao
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskDao
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskList
 import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskListDao
 import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.database.user.UserDao
+import com.mobicom.s17.group8.mobicom_mco.database.study.Course
+import com.mobicom.s17.group8.mobicom_mco.database.study.Deck
+import com.mobicom.s17.group8.mobicom_mco.database.study.DeckDao
+import com.mobicom.s17.group8.mobicom_mco.database.study.FlashcardDao
+import com.mobicom.s17.group8.mobicom_mco.database.study.Flashcard
+
+
 //import kotlinx.coroutines.CoroutineScope
 //import kotlinx.coroutines.launch
 
-@Database(entities = [User::class, Task::class, TaskList::class],
-    version = 1,
+@Database(entities = [User::class, Task::class, TaskList::class, Course::class, Deck::class, Flashcard::class],
+    version = 2,
     exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
     abstract fun taskDao(): TaskDao
     abstract fun taskListDao(): TaskListDao
+    abstract fun courseDao(): CourseDao
+    abstract fun deckDao(): DeckDao
+    abstract fun flashcardDao(): FlashcardDao
 
     companion object {
         // Volatile ensures that the value of INSTANCE is always up-to-date

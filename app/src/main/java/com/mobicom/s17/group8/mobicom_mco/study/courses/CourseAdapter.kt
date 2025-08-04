@@ -1,10 +1,11 @@
-package com.mobicom.s17.group8.mobicom_mco.study
+package com.mobicom.s17.group8.mobicom_mco.study.courses
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.mobicom.s17.group8.mobicom_mco.database.study.Course
 import com.mobicom.s17.group8.mobicom_mco.databinding.ListItemCourseBinding
 
 class CourseAdapter(

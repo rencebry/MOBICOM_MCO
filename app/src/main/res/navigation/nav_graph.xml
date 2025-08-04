@@ -75,7 +75,7 @@
     <!-- fragments for decks -->
     <fragment
         android:id="@+id/nav_decks"
-        android:name="com.mobicom.s17.group8.mobicom_mco.study.DeckListFragment"
+        android:name="com.mobicom.s17.group8.mobicom_mco.study.deck.DeckListFragment"
         android:label="Decks"
         tools:layout="@layout/fragment_deck_list">
 
@@ -94,7 +94,7 @@
     <!-- fragments for flashcards -->
     <fragment
         android:id="@+id/nav_flashcards"
-        android:name="com.mobicom.s17.group8.mobicom_mco.study.FlashcardListFragment"
+        android:name="com.mobicom.s17.group8.mobicom_mco.study.flashcard.FlashcardListFragment"
         android:label="Flashcards"
         tools:layout="@layout/fragment_flashcard_list">
 

@@ -1,11 +1,14 @@
-package com.mobicom.s17.group8.mobicom_mco.study
+package com.mobicom.s17.group8.mobicom_mco.study.courses
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.mobicom.s17.group8.mobicom_mco.R
@@ -13,6 +16,13 @@ import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddCourseBinding
 import java.util.UUID
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
+import androidx.fragment.app.activityViewModels
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
 
 
 class AddCourseDialogFragment : DialogFragment() {
@@ -20,11 +30,19 @@ class AddCourseDialogFragment : DialogFragment() {
     private var _binding: DialogAddCourseBinding? = null
     private val binding get() = _binding!!
 
-    // Get a reference to the same ViewModel the fragment is using
     private val viewModel: StudyViewModel by lazy {
-        ViewModelProvider(requireActivity())[StudyViewModel::class.java]
+        val activity = requireActivity()
+        val userId = Firebase.auth.currentUser?.uid ?: ""
+        val database = AppDatabase.getDatabase(activity.applicationContext)
+        val repository = StudyRepository(
+            courseDao = database.courseDao(),
+            deckDao = database.deckDao(),
+            flashcardDao = database.flashcardDao(),
+            userId = userId
+        )
+        val factory = StudyViewModelFactory(repository, userId)
+        ViewModelProvider(activity, factory).get(StudyViewModel::class.java)
     }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogAddCourseBinding.inflate(inflater, container, false)
         return binding.root
@@ -36,16 +54,14 @@ class AddCourseDialogFragment : DialogFragment() {
         setupColorPickers()
 
         binding.btnSave.setOnClickListener {
-            val selectedColorId = getSelectedColor()
-            val newCourse = Course(
-                courseId = UUID.randomUUID().toString(),
-                courseTitle = binding.etCourseTitle.text.toString().trim(),
-                deckCount = 0, // New courses start with 0 decks
-                colorResId = selectedColorId
-            )
-
-            viewModel.addCourse(newCourse)
-            dismiss()
+            val courseName = binding.etCourseTitle.text.toString().trim()
+            if (courseName.isNotBlank()) {
+                val selectedColorId = getSelectedColor()
+                viewModel.addCourse(courseName, selectedColorId)
+                dismiss()
+            } else {
+                // Show error
+            }
         }
     }
 
@@ -60,10 +76,21 @@ class AddCourseDialogFragment : DialogFragment() {
         )
 
         for ((radioButton, colorResId) in colorMap) {
-            val color = ContextCompat.getColor(requireContext(), colorResId)
-            radioButton.backgroundTintList = ColorStateList.valueOf(color)
+            val colorCircle = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(ContextCompat.getColor(requireContext(), colorResId))
+            }
+
+            val borderSelector =
+                ContextCompat.getDrawable(requireContext(), R.drawable.color_picker_selector)
+
+            val layers = arrayOf(colorCircle, borderSelector)
+            val layerDrawable = LayerDrawable(layers)
+
+            radioButton.background = layerDrawable
         }
-    }
+
+        }
 
     private fun getSelectedColor(): Int {
         return when (binding.colorPickerGroup.checkedRadioButtonId) {
@@ -72,7 +99,7 @@ class AddCourseDialogFragment : DialogFragment() {
             R.id.colorOrange -> R.color.vinyl_orange
             R.id.colorPurple -> R.color.vinyl_purple
             R.id.colorMint -> R.color.vinyl_mint
-            else -> R.color.vinyl_blue // Default
+            else -> R.color.vinyl_blue
         }
     }
 
@@ -80,7 +107,8 @@ class AddCourseDialogFragment : DialogFragment() {
         super.onStart()
         // dialog window
         dialog?.window?.apply {
-            setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
+            setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
             setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
     }
