@@ -16,6 +16,10 @@ class TaskRepository (
         return taskListDao.getTaskListsForUser(userId)
     }
 
+    suspend fun getAllTaskListsForUser(userId: String): List<TaskList> {
+        return taskListDao.getAllTaskListsForUser(userId)
+    }
+
     fun getTasksByListId(tasklistId: String): Flow<List<Task>> {
         return taskDao.getTasksByListId(tasklistId)
     }
@@ -82,4 +86,39 @@ class TaskRepository (
     fun getAllTasksForUser(userId: String): Flow<List<Task>> {
         return taskDao.getAllTasksForUser(userId)
     }
+
+    // Methods for syncing
+    suspend fun getUnsyncedTaskLists(userId: String) = taskListDao.getUnsynced(userId)
+
+    suspend fun getUnsyncedTasks(userId: String) = taskDao.getUnsynced(userId)
+
+    suspend fun updateLocalListId(oldId: String, newId: String) {
+        taskListDao.updateIdAndSyncStatus(oldId, newId)
+        taskDao.updateTaskListIdForTasks(oldId, newId)
+    }
+
+    suspend fun updateLocalTaskId(oldId: String, newId: String) {
+        taskDao.updateIdAndSyncStatus(oldId, newId)
+    }
+
+    suspend fun markListAsSynced(listId: String) {
+        taskListDao.markAsSynced(listId)
+    }
+
+    suspend fun markTaskAsSynced(taskId: String) {
+        taskDao.markAsSynced(taskId)
+    }
+
+    suspend fun deleteTaskListPermanently(taskList: TaskList) {
+        taskListDao.deletePermanentlyById(taskList.id)
+    }
+
+    suspend fun deleteTaskListPermanentlyById(taskListId: String) {
+        taskListDao.deletePermanentlyById(taskListId)
+    }
+
+    suspend fun deleteTaskPermanently(taskId: String) {
+        taskDao.deletePermanentlyById(taskId)
+    }
+
 }

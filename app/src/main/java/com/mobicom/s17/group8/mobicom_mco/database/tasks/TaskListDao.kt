@@ -23,6 +23,21 @@ interface TaskListDao {
     @Query("SELECT * FROM tasklists WHERE userId= :userId")
     fun getTaskListsForUser(userId: String): Flow<List<TaskList>>
 
+    @Query("SELECT * FROM tasklists WHERE userId = :userId AND isDeleted = 0")
+    suspend fun getAllTaskListsForUser(userId: String): List<TaskList>
+
+    @Query("SELECT * FROM tasklists WHERE userId = :userId AND isSynced = 0")
+    suspend fun getUnsynced(userId: String): List<TaskList>
+
+    @Query("UPDATE tasklists SET isSynced = 1 WHERE id = :listId")
+    suspend fun markAsSynced(listId: String)
+
+    @Query("UPDATE tasklists SET id = :newId, isSynced = 1 WHERE id = :oldId")
+    suspend fun updateIdAndSyncStatus(oldId: String, newId: String)
+
+    @Query("DELETE FROM tasklists WHERE id = :listId")
+    suspend fun deletePermanentlyById(listId: String)
+
 //    @Query("DELETE FROM tasklists WHERE isDeleted = 1")
 //    suspend fun deleteAllDeletedTaskLists()
 }

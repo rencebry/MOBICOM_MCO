@@ -4,6 +4,7 @@
     <!-- Landing Page -->
     <string name="welcome_to">Welcome to</string>
     <string name="study_with_me">Study With Me.</string>
+    <string name="sign_up_with_google">Sign Up with Google</string>
     <string name="create_an_account">Create an account</string>
     <string name="log_in">Log-in</string>
 

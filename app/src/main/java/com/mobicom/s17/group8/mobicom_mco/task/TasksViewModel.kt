@@ -109,7 +109,7 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
         viewModelScope.launch{
             val newList = TaskList(
                 // TODO: Check if UUID is compatible with Google Tasks API id string format
-                id = UUID.randomUUID().toString(),
+                id = "temp_${UUID.randomUUID()}", // Use a temporary ID for local storage
                 userId = this@TasksViewModel.userId,
                 title = listName,
                 updated = Instant.now().toString(),
@@ -133,10 +133,14 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
         }
     }
 
-    // Function to delete a task list
+    // Function to delete a task list (soft delete)
     fun deleteTaskList(taskList: TaskList) {
         viewModelScope.launch {
-            repository.deleteTaskList(taskList)
+            val deletedList = taskList.copy(
+                isDeleted = true,
+                isSynced = false // Mark as unsynced
+            )
+            repository.updateTaskList(deletedList)
         }
     }
 
@@ -144,7 +148,7 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
     fun addNewTask(title: String, notes: String? ,due: String?, taskListId: String) {
         viewModelScope.launch {
             val newTask = Task(
-                id = UUID.randomUUID().toString(),
+                id = "temp_${UUID.randomUUID()}", // Use a temporary ID for local storage
                 userId = this@TasksViewModel.userId,
                 tasklistId = taskListId,
                 title = title,
@@ -190,10 +194,23 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
                 due = due,
                 tasklistId = taskListId,
                 updated = Instant.now().toString(),
-                //isSynced = false // Mark as unsynced
+                isSynced = false // Mark as unsynced
             )
             repository.updateTask(updatedTask)
             _viewedTask.value = updatedTask // Update the viewed task
+        }
+    }
+
+    // Function to delete the currently viewed task (soft delete)
+    fun deleteTask() {
+        _viewedTask.value?.let { taskToDelete ->
+            viewModelScope.launch {
+                val deletedTask = taskToDelete.copy(
+                    isDeleted = true,
+                    isSynced = false // Mark as unsynced
+                )
+                repository.updateTask(deletedTask)
+            }
         }
     }
 
@@ -226,14 +243,6 @@ class TasksViewModel(private val repository: TaskRepository, private val userId:
                 repository.updateTask(originalTask)
                 _viewedTask.value = originalTask // Restore the original task state
                 taskBeforeToggle = null
-            }
-        }
-    }
-
-    fun deleteTask() {
-        _viewedTask.value?.let { taskToDelete ->
-            viewModelScope.launch {
-                repository.deleteTask(taskToDelete)
             }
         }
     }

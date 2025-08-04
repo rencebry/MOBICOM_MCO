@@ -1,8 +1,12 @@
 [versions]
 agp = "8.10.1"
+grpc = "1.62.2"
 firebaseBom = "33.16.0"
 firebaseUiAuth = "8.0.2"
 glide = "4.16.0"
+googleApiClientAndroid = "2.2.0"
+googleApiServicesTasks = "v1-rev20250105-2.0.0"
+googleHttpClientVersion = "1.42.3"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -48,6 +52,11 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version = "2.0.4" }
+google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
+google-api-services-tasks = { module = "com.google.apis:google-api-services-tasks", version.ref = "googleApiServicesTasks" }
+google-http-client-android = { module = "com.google.http-client:google-http-client-android", version.ref = "googleHttpClientVersion" }
+google-http-client-gson = { module = "com.google.http-client:google-http-client-gson", version.ref = "googleHttpClientVersion" }
+grpc-android = { group = "io.grpc", name = "grpc-android", version.ref = "grpc" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

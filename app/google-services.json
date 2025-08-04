@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "330230534714-vtb2ftrfltipvfm21m6jgg2h26dgsde5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobicom.s17.group8.mobicom_mco",
+            "certificate_hash": "35261a5e5bd4a4b3297e233a8384317451c4d3e1"
+          }
+        },
+        {
           "client_id": "330230534714-p0gnnsieum1vhjgb7nqok0vvmnglot2v.apps.googleusercontent.com",
           "client_type": 3
         }

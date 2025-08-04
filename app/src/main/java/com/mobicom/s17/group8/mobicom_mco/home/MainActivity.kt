@@ -1,5 +1,6 @@
 package com.mobicom.s17.group8.mobicom_mco.home
 
+import android.util.Log
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
@@ -17,9 +18,17 @@ import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityMainBinding
 import com.mobicom.s17.group8.mobicom_mco.music.MusicService
 import com.mobicom.s17.group8.mobicom_mco.music.MusicSharedViewModel
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.api.TasksApiService
 import com.mobicom.s17.group8.mobicom_mco.auth.UserAuthViewModel
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskRepository
+import com.mobicom.s17.group8.mobicom_mco.sync.SyncPrefs
+import com.mobicom.s17.group8.mobicom_mco.sync.SyncRepository
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val userAuthViewModel: UserAuthViewModel by viewModels()
+
+    private lateinit var syncPrefs: SyncPrefs
 
     private var musicService: MusicService? = null
     private var isBound = false
@@ -50,11 +61,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        syncPrefs = SyncPrefs(applicationContext)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         Firebase.auth.currentUser?.let { user ->
             userAuthViewModel.setCurrentUser(user.uid)
+        }
+
+        lifecycleScope.launch{
+            userAuthViewModel.currentUserId.collect { userId ->
+                if (userId != null) {
+                    performFullSync(userId)
+                }
+            }
         }
 
         val navHostFragment = supportFragmentManager
@@ -104,6 +124,33 @@ class MainActivity : AppCompatActivity() {
                 binding.musicPlayerWidget.widgetPauseButton.setImageResource(R.drawable.pause)
             } else {
                 binding.musicPlayerWidget.widgetPauseButton.setImageResource(R.drawable.play)
+            }
+        }
+    }
+
+    private fun performFullSync(userId: String) {
+        val googleAccount = GoogleSignIn.getLastSignedInAccount(this)
+        if (googleAccount == null) {
+            Log.e("MainActivity", "Cannot sync, Google account is null.")
+            return
+        }
+
+        lifecycleScope.launch {
+            Log.d("MainActivity", "Starting full sync for user $userId")
+
+            val lastSyncTimestamp = syncPrefs.getLastSyncTimestamp(userId)
+            val apiService = TasksApiService(applicationContext, googleAccount)
+            val database = AppDatabase.getDatabase(applicationContext)
+            val taskRepository = TaskRepository(database.taskDao(), database.taskListDao())
+            val syncRepository = SyncRepository(apiService, taskRepository, userId)
+
+            try {
+                val newSyncTimestamp = syncRepository.performSync(lastSyncTimestamp)
+
+                syncPrefs.updateLastSyncTimestamp(userId, newSyncTimestamp)
+                Log.d("MainActivity", "Full sync successful. New timestamp saved.")
+            } catch (e: Exception) {
+                Log.e("MainActivity", "Full sync failed", e)
             }
         }
     }

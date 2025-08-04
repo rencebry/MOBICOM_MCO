@@ -146,7 +146,7 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
     private fun setupSpinners() {
         // Data for the Spinners
         val taskTypes = arrayOf("Ongoing", "All", "Missed", "Completed")
-        val viewOptions = arrayOf("List", "Calendar")
+//        val viewOptions = arrayOf("List", "Calendar")
 
         // Adapter for Task Type Spinner
         val taskTypeAdapter = ArrayAdapter(
@@ -174,13 +174,13 @@ class TaskFragment : Fragment(R.layout.fragment_todo_list) {
             }
  }
         // Adapter for View Options Spinner
-        val viewOptionsAdapter = ArrayAdapter(
-            requireContext(),
-            R.layout.spinner_item_default,
-            viewOptions
-        )
-        viewOptionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerViewOption.adapter = viewOptionsAdapter
+//        val viewOptionsAdapter = ArrayAdapter(
+//            requireContext(),
+//            R.layout.spinner_item_default,
+//            viewOptions
+//        )
+//        viewOptionsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//        binding.spinnerViewOption.adapter = viewOptionsAdapter
     }
 
     private fun showTaskListOptionsMenu(anchorView: View) {

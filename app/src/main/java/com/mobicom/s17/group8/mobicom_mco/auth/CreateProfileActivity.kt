@@ -9,14 +9,18 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.mobicom.s17.group8.mobicom_mco.api.TasksApiService
 import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.TaskRepository
 import com.mobicom.s17.group8.mobicom_mco.database.user.User
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityCreateProfileBinding
 import com.mobicom.s17.group8.mobicom_mco.home.MainActivity
+import com.mobicom.s17.group8.mobicom_mco.sync.SyncRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -121,6 +125,9 @@ class CreateProfileActivity : AppCompatActivity() {
                         val userDao = AppDatabase.getDatabase(applicationContext).userDao()
                         userDao.insertOrUpdateUser(roomUser)
 
+                        Log.d("CreateProfileAcitivty", "User profile created. Starting initial task sync.")
+                        performInitialSync(user.uid)
+
                         withContext(Dispatchers.Main) {
                             Toast.makeText(this@CreateProfileActivity, "Profile created successfully!", Toast.LENGTH_SHORT).show()
                             navigateToMainApp()
@@ -133,6 +140,23 @@ class CreateProfileActivity : AppCompatActivity() {
                         Toast.makeText(this@CreateProfileActivity, "Failed to create profile: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 }
+        }
+    }
+
+    private fun performInitialSync(userId: String) {
+        val googleAccount = GoogleSignIn.getLastSignedInAccount(this)
+        if (googleAccount == null) {
+            Log.e("CreateProfileActivity", "Cannot sync, Google account is null.")
+            return
+        }
+
+        val apiService = TasksApiService(applicationContext, googleAccount)
+        val database = AppDatabase.getDatabase(applicationContext)
+        val taskRepository = TaskRepository(database.taskDao(), database.taskListDao())
+        val syncRepository = SyncRepository(apiService, taskRepository, userId)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            syncRepository.performInitialSync()
         }
     }
 

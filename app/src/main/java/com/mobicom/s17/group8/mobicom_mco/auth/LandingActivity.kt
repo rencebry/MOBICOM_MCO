@@ -19,6 +19,9 @@ import com.mobicom.s17.group8.mobicom_mco.R
 import com.mobicom.s17.group8.mobicom_mco.databinding.ActivityLandingBinding
 import com.mobicom.s17.group8.mobicom_mco.home.MainActivity
 import com.google.firebase.firestore.ktx.firestore
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.tasks.TasksScopes
+import com.mobicom.s17.group8.mobicom_mco.database.tasks.Task
 
 
 class LandingActivity : AppCompatActivity() {
@@ -27,6 +30,10 @@ class LandingActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
     private val db = Firebase.firestore
+
+    companion object {
+        private val TASKS_API_SCOPE = Scope(TasksScopes.TASKS)
+    }
 
     private val googleSignInLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -45,6 +52,8 @@ class LandingActivity : AppCompatActivity() {
             }
         }
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLandingBinding.inflate(layoutInflater)
@@ -62,14 +71,22 @@ class LandingActivity : AppCompatActivity() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
+            .requestScopes(TASKS_API_SCOPE)
             .build()
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         // Set up button click listeners
         binding.btnGoogleSignIn.setOnClickListener {
-            val signInIntent = googleSignInClient.signInIntent
-            googleSignInLauncher.launch(signInIntent)
+            val lastSignedInAccount = GoogleSignIn.getLastSignedInAccount(this)
+            if (lastSignedInAccount != null && lastSignedInAccount.grantedScopes.contains(TASKS_API_SCOPE)){
+                Log.d("LandingActivity", "User already granted scope, proceeding to Firebase auth.")
+                firebaseAuthWithGoogle(lastSignedInAccount.idToken!!)
+            } else {
+                Log.d("LandingActivity", "Launching sign-in intent to request scope.")
+                val signInIntent = googleSignInClient.signInIntent
+                googleSignInLauncher.launch(signInIntent)
+            }
         }
 
         binding.btnCreateAccount.setOnClickListener {
