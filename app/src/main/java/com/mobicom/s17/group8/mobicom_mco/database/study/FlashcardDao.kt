@@ -26,4 +26,12 @@ interface FlashcardDao {
 
     @Query("SELECT * FROM flashcards WHERE deckId = :deckId")
     suspend fun getFlashcardsForDeckSync(deckId: String): List<Flashcard>
+
+    @Query("SELECT COUNT(flashcardId) FROM flashcards WHERE deckId = :deckId")
+    suspend fun getFlashcardCountForDeck(deckId: String): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(flashcards: List<Flashcard>)
+
+
 }

@@ -1,29 +1,46 @@
-package com.mobicom.s17.group8.mobicom_mco.study.deck
+package com.mobicom.s17.group8.mobicom_mco.study.deck // Or your correct package
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentDeckListBinding
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentDeckListBinding // Make sure this is your correct binding
+import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.database.study.Deck
 
 class DeckListFragment : Fragment() {
     private var _binding: FragmentDeckListBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var adapter: DeckAdapter
-
-    private val viewModel: StudyViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(StudyViewModel::class.java)
-    }
 
     private val args: DeckListFragmentArgs by navArgs()
+
+    private val viewModel: StudyViewModel by viewModels {
+        val activity = requireActivity()
+        val userId = Firebase.auth.currentUser?.uid ?: ""
+        val database = AppDatabase.getDatabase(activity.applicationContext)
+        val repository = StudyRepository(
+            courseDao = database.courseDao(),
+            deckDao = database.deckDao(),
+            flashcardDao = database.flashcardDao(),
+            userId = userId
+        )
+        StudyViewModelFactory(repository, userId)
+    }
+
+    private lateinit var deckAdapter: DeckAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDeckListBinding.inflate(inflater, container, false)
@@ -33,68 +50,73 @@ class DeckListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvDeckTitle.text = args.courseName
-        val courseId = args.courseId
+        (activity as? AppCompatActivity)?.supportActionBar?.title = args.courseName
 
-        setupAdapter()
         setupRecyclerView()
-        observeDecks(courseId)
-        setupClickListeners(courseId)
-    }
+        setupClickListeners()
 
-    private fun setupAdapter() {
-        adapter = DeckAdapter(
-            studyViewModel = viewModel,
-            onPlayClicked = { selectedDeck ->
-                // Navigate to the flashcard viewer screen (shuffle OFF)
-                val action = DeckListFragmentDirections
-                    .actionDeckListFragmentToFlashcardListFragment(selectedDeck.deckId, args.courseId, shuffle = false)
-                findNavController().navigate(action)
-            },
-            onDeleteDeck = { deckToDelete ->
-                // TODO: Show a confirmation dialog before deleting
-                viewModel.deleteDeck(deckToDelete)
-            }
-        )
+        observeAndRefreshDecks()
     }
 
     private fun setupRecyclerView() {
+        deckAdapter = DeckAdapter { deck, action ->
+            handleDeckAction(deck, action)
+        }
         binding.rvDecks.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvDecks.adapter = adapter
+        binding.rvDecks.adapter = deckAdapter
     }
 
-    private fun observeDecks(courseId: String) {
-        // Observe the LiveData from the ViewModel to get decks for this specific course
-        viewModel.getDecksForCourse(courseId).observe(viewLifecycleOwner) { decks ->
-            adapter.submitList(decks)
-            // You can add empty state logic here
+    private fun setupClickListeners() {
+        binding.fabAddDeck.setOnClickListener { // Use your FAB ID
+            AddDeckDialogFragment.newInstance(args.courseId).show(parentFragmentManager, "AddDeckDialog")
         }
     }
 
-    private fun setupClickListeners(courseId: String) {
-        binding.buttonBackToCourses.setOnClickListener {
-            findNavController().navigateUp()
-        }
+    private fun observeAndRefreshDecks() {
+        viewModel.refreshDecksForCourse(args.courseId)
 
-        binding.fabAddDeck.setOnClickListener {
-            AddDeckDialogFragment.newInstance(courseId)
-                .show(parentFragmentManager, "add_deck")
+        viewModel.getDecksForCourse(args.courseId).observe(viewLifecycleOwner) { decks ->
+            if (decks != null) {
+                deckAdapter.submitList(decks)
+            }
         }
+    }
 
-        binding.fabPlayCourse.setOnClickListener {
-            val decks = adapter.currentList
-            if (decks.isEmpty()) {
-                Toast.makeText(requireContext(), "This course has no decks to play!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+    private fun handleDeckAction(deck: Deck, action: DeckAdapter.DeckAction) {
+        when (action) {
+            is DeckAdapter.DeckAction.Click -> {
+                val navAction =
+                    DeckListFragmentDirections.actionDeckListFragmentToFlashcardListFragment(deck.deckId)
+                findNavController().navigate(navAction)
             }
 
-            val action = DeckListFragmentDirections
-                .actionDeckListFragmentToFlashcardListFragment(
-                    deckId = "course_play_dummy",
-                    courseId = courseId,
-                    shuffle = true
-                )
-            findNavController().navigate(action)
+            is DeckAdapter.DeckAction.Play -> {
+                Toast.makeText(context, "Play deck: ${deck.deckTitle}", Toast.LENGTH_SHORT).show()
+                val navAction =
+                    DeckListFragmentDirections.actionDeckListFragmentToFlashcardListFragment(deck.deckId)
+                findNavController().navigate(navAction)
+            }
+
+            is DeckAdapter.DeckAction.Favorite -> {
+                Toast.makeText(
+                    context,
+                    "Favorite toggled for: ${deck.deckTitle}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            is DeckAdapter.DeckAction.Rename -> {
+                RenameDeckDialogFragment.newInstance(deck.deckId)
+                    .show(parentFragmentManager, "RenameDeckDialog")
+            }
+
+            is DeckAdapter.DeckAction.Delete -> {
+                viewModel.deleteDeck(deck)
+            }
+
+            is DeckAdapter.DeckAction.Export -> {
+                Toast.makeText(context, "Export deck: ${deck.deckTitle}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

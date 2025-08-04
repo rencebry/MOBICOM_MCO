@@ -1,105 +1,104 @@
 package com.mobicom.s17.group8.mobicom_mco.study.flashcard
 
-import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.Toast
 import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.toColorInt
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import com.mobicom.s17.group8.mobicom_mco.R
+import androidx.fragment.app.viewModels
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
 import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddFlashcardBinding
+import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
 
 class AddFlashcardDialogFragment : DialogFragment() {
 
-    private lateinit var binding: DialogAddFlashcardBinding
+    private var _binding: DialogAddFlashcardBinding? = null
+    private val binding get() = _binding!!
 
-    private val viewModel: StudyViewModel by activityViewModels()
-
+    private val viewModel: StudyViewModel by viewModels {
+        val activity = requireActivity()
+        val userId = Firebase.auth.currentUser?.uid ?: ""
+        val database = AppDatabase.getDatabase(activity.applicationContext)
+        val repository = StudyRepository(
+            courseDao = database.courseDao(),
+            deckDao = database.deckDao(),
+            flashcardDao = database.flashcardDao(),
+            userId = userId
+        )
+        StudyViewModelFactory(repository, userId)
+    }
 
     companion object {
         private const val ARG_DECK_ID = "deck_id"
         private const val ARG_COURSE_ID = "course_id"
 
         fun newInstance(deckId: String, courseId: String): AddFlashcardDialogFragment {
-            val fragment = AddFlashcardDialogFragment()
-            fragment.arguments = Bundle().apply {
-                putString(ARG_DECK_ID, deckId)
-                putString(ARG_COURSE_ID, courseId)
+            return AddFlashcardDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_DECK_ID, deckId)
+                    putString(ARG_COURSE_ID, courseId)
+                }
             }
-            return fragment
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogAddFlashcardBinding.inflate(layoutInflater)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = DialogAddFlashcardBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val deckId = requireArguments().getString(ARG_DECK_ID)!!
         val courseId = requireArguments().getString(ARG_COURSE_ID)!!
-
-        val questionLimit = 160
-        val answerLimit = 250
-
-        // Initial setup
-        binding.questionCounter.text = getString(R.string.char_counter, 0, questionLimit)
-        binding.answerCounter.text = getString(R.string.char_counter, 0, answerLimit)
-        binding.btnSave.isEnabled = false
-        binding.btnSave.setTextColor(requireContext().getColor(android.R.color.darker_gray))
-
 
         val updateSaveButtonState = {
             val question = binding.etQuestion.text.toString().trim()
             val answer = binding.etAnswer.text.toString().trim()
             binding.btnSave.isEnabled = question.isNotEmpty() && answer.isNotEmpty()
-            binding.btnSave.setTextColor(
-                if (binding.btnSave.isEnabled) "#5A8392".toColorInt()
-                else requireContext().getColor(android.R.color.darker_gray)
-            )
         }
 
-        binding.etQuestion.addTextChangedListener {
-            val length = it?.length ?: 0
-            binding.questionCounter.text = getString(R.string.char_counter, length, questionLimit)
-            updateSaveButtonState()
-        }
-
-        binding.etAnswer.addTextChangedListener {
-            val length = it?.length ?: 0
-            binding.answerCounter.text = getString(R.string.char_counter, length, answerLimit)
-            updateSaveButtonState()
-        }
-
-        binding.btnClear.setOnClickListener {
-            binding.etQuestion.setText("")
-            binding.etAnswer.setText("")
-        }
-
-        binding.btnCancel.setOnClickListener {
-            dismiss()
-        }
+        binding.etQuestion.addTextChangedListener { updateSaveButtonState() }
+        binding.etAnswer.addTextChangedListener { updateSaveButtonState() }
+        binding.btnClose.setOnClickListener { dismiss() }
 
         binding.btnSave.setOnClickListener {
-            val question = binding.etQuestion.text.toString()
-            val answer = binding.etAnswer.text.toString()
+            val question = binding.etQuestion.text.toString().trim()
+            val answer = binding.etAnswer.text.toString().trim()
 
-            viewModel.addFlashcard(deckId, courseId, question, answer)
-            dismiss()
+            if (question.isNotEmpty() && answer.isNotEmpty()) {
+                viewModel.addFlashcard(deckId, courseId, question, answer)
+
+                Toast.makeText(requireContext(), "Flashcard saved!", Toast.LENGTH_SHORT).show()
+                dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Please fill out both question and answer.", Toast.LENGTH_SHORT).show()
+            }
         }
-
-        return AlertDialog.Builder(requireContext())
-            .setTitle("Add Flashcard")
-            .setView(binding.root)
-            .create()
     }
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-        listOf(binding.btnClear, binding.btnCancel, binding.btnSave).forEach {
-            it.background = null
+        dialog?.window?.apply {
+            val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
+            setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 
 @Entity(
     tableName = "flashcards",
@@ -17,10 +18,10 @@ import android.os.Parcelable
 )
 @Parcelize
 data class Flashcard(
-    @PrimaryKey val flashcardId: String,
-    val deckId: String,
-    val courseId: String,
-    val question: String,
-    val answer: String,
+    @PrimaryKey val flashcardId: String = "",
+    @ColumnInfo(name = "deckId") val deckId: String = "",
+    @ColumnInfo(name = "courseId") val courseId: String = "",
+    val question: String = "",
+    val answer: String = "",
     val isFavorite: Boolean = false
 ) : Parcelable

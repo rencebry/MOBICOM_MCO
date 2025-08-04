@@ -70,7 +70,9 @@ class StudyFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.courses.observe(viewLifecycleOwner) { courseList ->
-            courseAdapter.submitList(courseList)
+            if (courseList != null) {
+                courseAdapter.submitList(courseList)
+            }
         }
 
         viewModel.isEditMode.observe(viewLifecycleOwner) { isEditing ->

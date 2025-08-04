@@ -2,10 +2,10 @@ package com.mobicom.s17.group8.mobicom_mco.study
 
 import androidx.annotation.ColorRes
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.mobicom.s17.group8.mobicom_mco.database.study.Course
 import com.mobicom.s17.group8.mobicom_mco.database.study.Deck
@@ -21,7 +21,7 @@ class StudyViewModel(
     private val userId: String
 ) : ViewModel() {
 
-    // --- COURSES DATA (from Repository) ---
+    // --- COURSES ---
     val courses: LiveData<List<Course>> = repository.allCourses
 
     private val _isEditMode = MutableLiveData(false)
@@ -30,13 +30,24 @@ class StudyViewModel(
     private val _allDecks = MutableLiveData<List<Deck>>()
     private val _allFlashcards = MutableLiveData<List<Flashcard>>()
 
+    private val _decksForCurrentCourse = MediatorLiveData<List<Deck>>()
+    val decksForCurrentCourse: LiveData<List<Deck>> = _decksForCurrentCourse
+
+    private var currentDecksSource: LiveData<List<Deck>>? = null
+
+    private val _flashcardsForCurrentDeck = MediatorLiveData<List<Flashcard>>()
+    val flashcardsForCurrentDeck: LiveData<List<Flashcard>> = _flashcardsForCurrentDeck
+
+    private var currentFlashcardsSource: LiveData<List<Flashcard>>? = null
+
     init {
+        // When the ViewModel is first created, refresh the top-level courses
         viewModelScope.launch {
             repository.refreshCourses()
         }
     }
 
-    // --- COURSE FUNCTIONS (interact with Repository) ---
+    // --- COURSE FUNCTIONS ---
     fun toggleEditMode() {
         _isEditMode.value = !(_isEditMode.value ?: false)
     }
@@ -57,6 +68,19 @@ class StudyViewModel(
     fun deleteCourse(courseId: String) {
         viewModelScope.launch {
             repository.deleteCourse(courseId)
+        }
+    }
+
+    // --- DECK FUNCTIONS ---
+    fun getDecksForCourse(courseId: String): LiveData<List<Deck>> {
+        // Directly return the LiveData from the repository
+        return repository.getDecksForCourse(courseId)
+    }
+
+    fun refreshDecksForCourse(courseId: String) {
+        // Trigger a background refresh from Firestore
+        viewModelScope.launch {
+            repository.refreshDecksForCourse(courseId)
         }
     }
 
@@ -91,22 +115,17 @@ class StudyViewModel(
         }
     }
 
-
-
-    fun getDecksForCourse(courseId: String): LiveData<List<Deck>> {
-        viewModelScope.launch {
-            repository.refreshDecksForCourse(courseId)
-        }
-        return repository.getDecksForCourse(courseId)
-    }
-
+    // --- FLASHCARD FUNCTIONS ---
     fun getFlashcardsForDeck(deckId: String): LiveData<List<Flashcard>> {
-        // TODO: Add a refreshFlashcards() call here if you want to sync from Firestore
+        // Directly return the LiveData from the repository
         return repository.getFlashcardsForDeck(deckId)
     }
 
-    fun getFlashcardsForCourse(courseId: String): LiveData<List<Flashcard>> {
-        return repository.getFlashcardsForCourse(courseId)
+    fun refreshFlashcardsForDeck(deckId: String) {
+        // Trigger a background refresh from Firestore
+        viewModelScope.launch {
+            repository.refreshFlashcardsForDeck(deckId)
+        }
     }
 
     fun addFlashcard(deckId: String, courseId: String, question: String, answer: String) {
@@ -119,7 +138,6 @@ class StudyViewModel(
                 answer = answer
             )
             repository.addFlashcard(newFlashcard)
-            // TODO: Also update the cardCount in the Deck object
         }
     }
 
@@ -129,30 +147,17 @@ class StudyViewModel(
         }
     }
 
-
-
     fun deleteFlashcard(flashcard: Flashcard) {
         viewModelScope.launch {
             repository.deleteFlashcard(flashcard)
-            // TODO: Also update the cardCount in the Deck object
         }
     }
 
     fun getFlashcardById(flashcardId: String): Flashcard? {
         return _allFlashcards.value?.find { it.flashcardId == flashcardId }
     }
-
-
-    fun updateDeck(deck: Deck) {
-        viewModelScope.launch {
-            repository.renameDeck(deck) // renameDeck in repo can be a general purpose update
-        }
-    }
-
-    suspend fun getFlashcardsForExport(deckId: String): List<Flashcard> {
-        return repository.getFlashcardsForDeckSync(deckId)
-    }
 }
+
 
 class StudyViewModelFactory(
     private val repository: StudyRepository,

@@ -1,114 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp">
+    android:orientation="vertical"
+    android:background="@drawable/rounded_background"
+    android:padding="24dp">
 
-    <!-- ADD QUESTION -->
-    <EditText
-        android:id="@+id/etQuestion"
-        android:hint="@string/edit_flashcard_question"
-        android:inputType="textMultiLine"
-        android:maxLines="5"
-        android:minHeight="48dp"
-        android:maxLength="160"
-        android:scrollbars="vertical"
-        android:layout_width="0dp"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvDialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add Flashcard"
+            android:textColor="@color/text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:padding="4dp"
+            android:src="@drawable/ic_close" />
+    </FrameLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilQuestion"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:importantForAutofill="no"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_chainStyle="packed" />
+        android:layout_marginTop="16dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="160">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Question / Term"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minLines="3" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- QUESTION CHARACTER LIMIT -->
-    <TextView
-        android:id="@+id/questionCounter"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilAnswer"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="250">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Answer / Definition"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minLines="4" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btnSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0 / 160"
-        android:textColor="@color/gray"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etQuestion" />
-
-    <!-- ADD ANSWER -->
-    <EditText
-        android:id="@+id/etAnswer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/edit_flashcard_answer"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine"
-        android:maxLength="250"
-        android:maxLines="5"
-        android:minHeight="48dp"
-        android:scrollbars="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/questionCounter" />
-
-    <!-- ANSWER CHARACTER LIMIT -->
-    <TextView
-        android:id="@+id/answerCounter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="0 / 250"
-        android:textColor="@color/gray"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etAnswer" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/buttonRow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/etAnswer">
-
-        <Button
-            android:id="@+id/btnClear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:fontFamily="sans-serif"
-            android:text="@string/clear"
-            android:textColor="#5A8392"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btnCancel"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:fontFamily="sans-serif"
-            android:text="@string/cancel"
-            android:textColor="#5A8392"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSave" />
-
-        <Button
-            android:id="@+id/btnSave"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:enabled="false"
-            android:fontFamily="sans-serif"
-            android:text="@string/save"
-            android:textColor="@color/gray"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:enabled="false"
+        android:text="Save" />
+</LinearLayout>

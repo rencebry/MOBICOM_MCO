@@ -7,17 +7,23 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.mobicom.s17.group8.mobicom_mco.R
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
 import com.mobicom.s17.group8.mobicom_mco.database.study.Deck
 import com.mobicom.s17.group8.mobicom_mco.database.study.Flashcard
 import com.mobicom.s17.group8.mobicom_mco.databinding.FragmentFlashcardListBinding
+import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
 import kotlinx.coroutines.launch
 
 class FlashcardListFragment : Fragment() {
@@ -25,8 +31,17 @@ class FlashcardListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val args: FlashcardListFragmentArgs by navArgs()
-    private val studyViewModel: StudyViewModel by lazy {
-        ViewModelProvider(requireActivity()).get(StudyViewModel::class.java)
+    private val viewModel: StudyViewModel by viewModels {
+        val activity = requireActivity()
+        val userId = Firebase.auth.currentUser?.uid ?: ""
+        val database = AppDatabase.getDatabase(activity.applicationContext)
+        val repository = StudyRepository(
+            courseDao = database.courseDao(),
+            deckDao = database.deckDao(),
+            flashcardDao = database.flashcardDao(),
+            userId = userId
+        )
+        StudyViewModelFactory(repository, userId)
     }
 
     private lateinit var adapter: RecyclerView.Adapter<*>
@@ -43,23 +58,33 @@ class FlashcardListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val deckId = args.deckId
-        if (deckId == null) {
-            Toast.makeText(requireContext(), "Error: Deck ID not found.", Toast.LENGTH_SHORT).show()
-            return // Stop execution if there's no ID
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
-            currentDeck = studyViewModel.getDeckById(deckId)
+            currentDeck = args.deckId?.let { viewModel.getDeckById(it) }
 
             if (currentDeck != null) {
                 (activity as? AppCompatActivity)?.supportActionBar?.title = currentDeck?.deckTitle
-
                 setupViews()
                 setupClickListeners()
                 observeData()
             } else {
                 Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun observeData() {
+        args.deckId?.let { viewModel.refreshFlashcardsForDeck(it) }
+
+        args.deckId?.let {
+            viewModel.getFlashcardsForDeck(it).observe(viewLifecycleOwner) { flashcardsFromDb ->
+                currentFlashcards = flashcardsFromDb ?: emptyList()
+
+                val initialList = if (args.shuffle) {
+                    currentFlashcards.shuffled()
+                } else {
+                    currentFlashcards
+                }
+                updateAdapterWithList(initialList)
             }
         }
     }
@@ -81,30 +106,18 @@ class FlashcardListFragment : Fragment() {
         binding.viewSwitch.setImageResource(if (isCompressedView) R.drawable.expanded else R.drawable.compressed)
     }
 
-    private fun observeData() {
-        val deckId = args.deckId!!
-        studyViewModel.getFlashcardsForDeck(deckId).observe(viewLifecycleOwner) { flashcardsFromDb ->
-            currentFlashcards = flashcardsFromDb
-
-            val initialList = if (args.shuffle) {
-                currentFlashcards.shuffled()
-            } else {
-                currentFlashcards
-            }
-            updateAdapterWithList(initialList)
-        }
-    }
 
     private fun setupClickListeners() {
-        val deckId = args.deckId!! // Safe to use !! here
-        val isCourseShuffle = args.shuffle && deckId == "course_play_dummy"
+        val isCourseShuffle = args.shuffle && args.deckId == "course_play_dummy"
 
         if (!isCourseShuffle) {
             binding.fabAddCards.setOnClickListener {
                 val courseId = currentDeck?.courseId
                 if (courseId != null) {
-                    AddFlashcardDialogFragment.newInstance(deckId, courseId)
-                        .show(parentFragmentManager, "add_flashcard")
+                    args.deckId?.let { it1 ->
+                        AddFlashcardDialogFragment.newInstance(it1, courseId)
+                            .show(parentFragmentManager, "add_flashcard")
+                    }
                 } else {
                     Toast.makeText(requireContext(), "Could not determine course.", Toast.LENGTH_SHORT).show()
                 }
@@ -138,24 +151,26 @@ class FlashcardListFragment : Fragment() {
         }
     }
 
+
+
     private fun createAdapter(compressed: Boolean): RecyclerView.Adapter<*> {
         return if (compressed) {
             FlashcardAdapterCompressed(
-                onDeleteFlashcard = { flashcard -> studyViewModel.deleteFlashcard(flashcard) },
+                onDeleteFlashcard = { flashcard -> viewModel.deleteFlashcard(flashcard) },
                 onEditFlashcard = { flashcard ->
                     EditFlashcardDialogFragment.newInstance(flashcard.flashcardId)
                         .show(parentFragmentManager, "edit_flashcard")
                 },
-                onUpdateFlashcard = { flashcard -> studyViewModel.updateFlashcard(flashcard) }
+                onUpdateFlashcard = { flashcard -> viewModel.updateFlashcard(flashcard) }
             )
         } else {
             FlashcardAdapterExpanded(
-                onDeleteFlashcard = { flashcard -> studyViewModel.deleteFlashcard(flashcard) },
+                onDeleteFlashcard = { flashcard -> viewModel.deleteFlashcard(flashcard) },
                 onEditFlashcard = { flashcard ->
                     EditFlashcardDialogFragment.newInstance(flashcard.flashcardId)
                         .show(parentFragmentManager, "edit_flashcard")
                 },
-                onUpdateFlashcard = { flashcard -> studyViewModel.updateFlashcard(flashcard) }
+                onUpdateFlashcard = { flashcard -> viewModel.updateFlashcard(flashcard) }
             )
         }
     }

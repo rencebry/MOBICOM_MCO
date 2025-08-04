@@ -19,4 +19,7 @@ interface CourseDao {
 
     @Query("DELETE FROM courses WHERE courseId = :courseId")
     suspend fun deleteCourseById(courseId: String)
+
+    @Query("UPDATE courses SET deckCount = :count WHERE courseId = :courseId")
+    suspend fun updateDeckCount(courseId: String, count: Int)
 }

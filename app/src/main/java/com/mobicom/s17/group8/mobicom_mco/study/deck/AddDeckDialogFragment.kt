@@ -6,22 +6,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import com.mobicom.s17.group8.mobicom_mco.R
+import androidx.lifecycle.ViewModelProvider // Add this import
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
 import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding
+import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
 
 class AddDeckDialogFragment : DialogFragment() {
 
     private var _binding: DialogAddDeckBinding? = null
     private val binding get() = _binding!!
 
-    // activityViewModels is a great way to get the shared ViewModel
-    private val viewModel: StudyViewModel by activityViewModels()
+    private val viewModel: StudyViewModel by lazy {
+        val activity = requireActivity()
+        val userId = Firebase.auth.currentUser?.uid ?: ""
+        val database = AppDatabase.getDatabase(activity.applicationContext)
+        val repository = StudyRepository(
+            courseDao = database.courseDao(),
+            deckDao = database.deckDao(),
+            flashcardDao = database.flashcardDao(),
+            userId = userId
+        )
+        val factory = StudyViewModelFactory(repository, userId)
+        ViewModelProvider(activity, factory).get(StudyViewModel::class.java)
+    }
 
     // Companion object for safe argument passing
     companion object {
@@ -45,7 +59,6 @@ class AddDeckDialogFragment : DialogFragment() {
 
         val courseId = requireArguments().getString(ARG_COURSE_ID)
         if (courseId == null) {
-            // If there's no courseId, we can't save, so just dismiss.
             dismiss()
             return
         }
@@ -55,7 +68,6 @@ class AddDeckDialogFragment : DialogFragment() {
 
     private fun setupListeners(courseId: String) {
         binding.etDeckTitle.addTextChangedListener { text ->
-            // Enable/disable save button based on whether the input is empty
             binding.btnSave.isEnabled = !text.isNullOrBlank()
         }
 
@@ -72,7 +84,6 @@ class AddDeckDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // This correctly sizes and styles the dialog window
         dialog?.window?.apply {
             val width = (resources.displayMetrics.widthPixels * 0.95).toInt()
             setLayout(width, WindowManager.LayoutParams.WRAP_CONTENT)

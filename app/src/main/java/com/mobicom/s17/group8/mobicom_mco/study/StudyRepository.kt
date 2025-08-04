@@ -67,9 +67,22 @@ class StudyRepository(
         }
     }
 
+    suspend fun refreshFlashcardsForDeck(deckId: String) = withContext(Dispatchers.IO) {
+        try {
+            val snapshot = flashcardsCollection.whereEqualTo("deckId", deckId).get().await()
+            val firestoreFlashcards = snapshot.toObjects(Flashcard::class.java)
+            flashcardDao.insertAll(firestoreFlashcards)
+            Log.d("StudyRepository", "Flashcards for deck $deckId refreshed.")
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error refreshing flashcards", e)
+        }
+    }
+
     suspend fun addDeck(deck: Deck) = withContext(Dispatchers.IO) {
         decksCollection.document(deck.deckId).set(deck).await()
         deckDao.insertDeck(deck)
+
+        updateCourseDeckCount(deck.courseId)
     }
 
     suspend fun renameDeck(deck: Deck) = withContext(Dispatchers.IO) {
@@ -80,6 +93,8 @@ class StudyRepository(
     suspend fun deleteDeck(deck: Deck) = withContext(Dispatchers.IO) {
         decksCollection.document(deck.deckId).delete().await()
         deckDao.deleteDeckById(deck.deckId)
+
+        updateCourseDeckCount(deck.courseId)
     }
 
     suspend fun getDeckById(deckId: String): Deck? = withContext(Dispatchers.IO) {
@@ -88,29 +103,100 @@ class StudyRepository(
 
     // --- FLASHCARD DATA ---
     fun getFlashcardsForDeck(deckId: String): LiveData<List<Flashcard>> {
+        Log.d("StudyRepository", "Getting LiveData for flashcards of deck: $deckId")
         return flashcardDao.getFlashcardsForDeck(deckId)
     }
 
     fun getFlashcardsForCourse(courseId: String): LiveData<List<Flashcard>> {
+        Log.d("StudyRepository", "Getting LiveData for flashcards of course: $courseId")
         return flashcardDao.getFlashcardsForCourse(courseId)
     }
 
-    suspend fun addFlashcard(flashcard: Flashcard) {
+    suspend fun addFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
+        try {
+            Log.d("StudyRepository", "Attempting to add flashcard to Firestore and Room. Flashcard: $flashcard")
+            flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await()
+            Log.d("StudyRepository", "Flashcard successfully written to Firestore: ${flashcard.flashcardId}")
+
+            flashcardDao.insertFlashcard(flashcard)
+            Log.d("StudyRepository", "Flashcard successfully inserted into Room: ${flashcard.flashcardId}")
+
+            updateDeckCardCount(flashcard.deckId)
+            Log.d("StudyRepository", "Deck card count updated for deck: ${flashcard.deckId}")
+
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "CRITICAL ERROR adding flashcard ${flashcard.flashcardId}: ${e.message}", e)
+
+        }
+    }
+
+    suspend fun insertFlashcard(flashcard: Flashcard) {
         flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await()
         flashcardDao.insertFlashcard(flashcard)
     }
 
-    suspend fun updateFlashcard(flashcard: Flashcard) {
-        flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await() // Use set for simplicity
-        flashcardDao.updateFlashcard(flashcard)
+    suspend fun updateFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
+        try {
+            flashcardsCollection.document(flashcard.flashcardId).set(flashcard).await() // Use set for simplicity
+            flashcardDao.updateFlashcard(flashcard)
+            Log.d("StudyRepository", "Flashcard updated: ${flashcard.flashcardId}")
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error updating flashcard ${flashcard.flashcardId}: ${e.message}", e)
+        }
     }
 
-    suspend fun deleteFlashcard(flashcard: Flashcard) {
-        flashcardsCollection.document(flashcard.flashcardId).delete().await()
-        flashcardDao.deleteFlashcardById(flashcard.flashcardId)
+    suspend fun deleteFlashcard(flashcard: Flashcard) = withContext(Dispatchers.IO) {
+        try {
+            flashcardsCollection.document(flashcard.flashcardId).delete().await()
+            flashcardDao.deleteFlashcardById(flashcard.flashcardId)
+            Log.d("StudyRepository", "Flashcard deleted: ${flashcard.flashcardId}")
+            updateDeckCardCount(flashcard.deckId)
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error deleting flashcard ${flashcard.flashcardId}: ${e.message}", e)
+        }
     }
 
     suspend fun getFlashcardsForDeckSync(deckId: String): List<Flashcard> = withContext(Dispatchers.IO) {
-        flashcardDao.getFlashcardsForDeckSync(deckId)
+        try {
+            val flashcards = flashcardDao.getFlashcardsForDeckSync(deckId)
+            Log.d("StudyRepository", "Sync fetch: ${flashcards.size} flashcards for deck $deckId")
+            flashcards
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error getting flashcards for deck sync $deckId: ${e.message}", e)
+            emptyList()
+        }
+    }
+
+    private suspend fun updateCourseDeckCount(courseId: String) {
+        try {
+            val count = deckDao.getDeckCountForCourse(courseId)
+            coursesCollection.document(courseId).update("deckCount", count).await()
+            courseDao.updateDeckCount(courseId, count)
+            Log.d("StudyRepository", "Course $courseId deck count updated to $count")
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error updating deck count for course $courseId: ${e.message}", e)
+        }
+    }
+
+    private suspend fun updateDeckCardCount(deckId: String) {
+        try {
+            val count = flashcardDao.getFlashcardCountForDeck(deckId)
+            decksCollection.document(deckId).update("cardCount", count).await()
+            deckDao.updateCardCount(deckId, count)
+            Log.d("StudyRepository", "Deck $deckId card count updated to $count")
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error updating card count for deck $deckId: ${e.message}", e)
+        }
+    }
+
+    suspend fun getDecksForCourseSync(courseId: String): List<Deck> = withContext(Dispatchers.IO) {
+        try {
+            val decks = deckDao.getDecksForCourseSync(courseId)
+            Log.d("StudyRepository", "Sync fetch: ${decks.size} decks for course $courseId")
+            decks
+        } catch (e: Exception) {
+            Log.e("StudyRepository", "Error getting decks for course sync $courseId: ${e.message}", e)
+            emptyList()
+        }
     }
 }

@@ -14,11 +14,11 @@ import androidx.room.PrimaryKey
     )]
 )
 data class Deck(
-    @PrimaryKey val deckId: String,
-    val courseId: String,
-    val deckTitle: String,
-    val dateCreated: String,
-    val cardCount: Int,
+    @PrimaryKey val deckId: String = "",
+    val courseId: String = "",
+    val deckTitle: String = "",
+    val dateCreated: String = "",
+    val cardCount: Int = 0,
     val isFavorite: Boolean = false,
-    val userId: String
+    val userId: String = ""
 )

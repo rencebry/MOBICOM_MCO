@@ -23,4 +23,13 @@ interface DeckDao {
 
     @Query("SELECT * FROM decks WHERE deckId = :deckId LIMIT 1")
     suspend fun getDeckById(deckId: String): Deck?
+
+    @Query("SELECT COUNT(deckId) FROM decks WHERE courseId = :courseId")
+    suspend fun getDeckCountForCourse(courseId: String): Int
+
+    @Query("UPDATE decks SET cardCount = :count WHERE deckId = :deckId")
+    suspend fun updateCardCount(deckId: String, count: Int)
+
+    @Query("SELECT * FROM decks WHERE courseId = :courseId")
+    suspend fun getDecksForCourseSync(courseId: String): List<Deck>
 }

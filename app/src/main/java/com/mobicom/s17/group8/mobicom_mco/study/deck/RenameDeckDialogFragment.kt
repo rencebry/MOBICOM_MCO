@@ -10,10 +10,16 @@ import android.widget.Toast
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider // Add this import
 import androidx.lifecycle.lifecycleScope
-import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding // Use the new binding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.mobicom.s17.group8.mobicom_mco.database.AppDatabase
+import com.mobicom.s17.group8.mobicom_mco.database.study.Deck
+import com.mobicom.s17.group8.mobicom_mco.databinding.DialogAddDeckBinding
+import com.mobicom.s17.group8.mobicom_mco.study.StudyRepository
 import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModel
+import com.mobicom.s17.group8.mobicom_mco.study.StudyViewModelFactory
 import kotlinx.coroutines.launch
 
 class RenameDeckDialogFragment : DialogFragment() {
@@ -21,7 +27,19 @@ class RenameDeckDialogFragment : DialogFragment() {
     private var _binding: DialogAddDeckBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: StudyViewModel by activityViewModels()
+    private val viewModel: StudyViewModel by lazy {
+        val activity = requireActivity()
+        val userId = Firebase.auth.currentUser?.uid ?: ""
+        val database = AppDatabase.getDatabase(activity.applicationContext)
+        val repository = StudyRepository(
+            courseDao = database.courseDao(),
+            deckDao = database.deckDao(),
+            flashcardDao = database.flashcardDao(),
+            userId = userId
+        )
+        val factory = StudyViewModelFactory(repository, userId)
+        ViewModelProvider(activity, factory).get(StudyViewModel::class.java)
+    }
 
     // Companion object for safe argument passing
     companion object {
@@ -55,15 +73,16 @@ class RenameDeckDialogFragment : DialogFragment() {
                 Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()
                 dismiss()
             } else {
-                // Populate the UI and set up listeners now that we have the data
+                // Pre-populate the EditText with the current deck title
                 binding.etDeckTitle.setText(deckToRename.deckTitle)
                 binding.etDeckTitle.setSelection(deckToRename.deckTitle.length)
+
                 setupListeners(deckToRename)
             }
         }
     }
 
-    private fun setupListeners(deckToRename: com.mobicom.s17.group8.mobicom_mco.database.study.Deck) {
+    private fun setupListeners(deckToRename: Deck) {
         // Enable/disable the save button based on input
         binding.etDeckTitle.addTextChangedListener { text ->
             binding.btnSave.isEnabled = !text.isNullOrBlank()
