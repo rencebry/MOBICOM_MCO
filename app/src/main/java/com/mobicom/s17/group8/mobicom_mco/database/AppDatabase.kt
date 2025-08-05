@@ -47,7 +47,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).fallbackToDestructiveMigration() // NOTE: This will recreate the database if the schema changes, remove once stable
+                )
+                    //.fallbackToDestructiveMigration() // NOTE: This will recreate the database if the schema changes, remove once stable
                 .build()
                 INSTANCE = instance
                 // return instance

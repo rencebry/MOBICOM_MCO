@@ -154,7 +154,7 @@ class EditProfileActivity : AppCompatActivity() {
                 db.collection("users").document(user.uid).update(firestoreUpdate).await()
                 Log.d("EditProfileActivity", "Firestore updated successfully.")
 
-                userDao.insertOrUpdateUser(updatedRoomUser)
+                userDao.updateUser(updatedRoomUser)
                 Log.d("EditProfileActivity", "Room database updated successfully.")
 
                 withContext(Dispatchers.Main) {
