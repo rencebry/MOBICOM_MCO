@@ -38,11 +38,7 @@ class DeckAdapter(
                     onAction(decks[adapterPosition], DeckAction.Play)
                 }
             }
-            binding.favoriteDeck.setOnClickListener {
-                if (adapterPosition != RecyclerView.NO_POSITION) {
-                    onAction(decks[adapterPosition], DeckAction.Favorite)
-                }
-            }
+
             binding.deckOptions.setOnClickListener {
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     showOptionsMenu(it as View, decks[adapterPosition])
@@ -64,8 +60,7 @@ class DeckAdapter(
             deckTitleTv.text = deck.deckTitle
             deckInfoTv.text = "${deck.dateCreated} | ${deck.cardCount} flashcards"
 
-             val starIcon = if (deck.isFavorite) R.drawable.ic_star_enabled else R.drawable.ic_star_disabled
-             favoriteDeck.setImageResource(starIcon)
+
         }
     }
 

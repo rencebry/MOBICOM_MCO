@@ -73,7 +73,7 @@
     <!-- FAVORITE DECK BUTTON -->
     <ImageButton
         android:id="@+id/favoriteDeck"
-        android:layout_width="45dp"
+        android:layout_width="20dp"
         android:layout_height="50dp"
         android:layout_marginStart="13dp"
         android:background="?attr/selectableItemBackgroundBorderless"
