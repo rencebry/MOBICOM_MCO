@@ -14,7 +14,6 @@ import com.mobicom.s17.group8.mobicom_mco.database.study.Flashcard
 
 class FlashcardAdapterCompressed(
     private val onDeleteFlashcard: (Flashcard) -> Unit,
-    private val onEditFlashcard: (Flashcard) -> Unit,
     private val onUpdateFlashcard: (Flashcard) -> Unit,
     private var showOnlyFavorites: Boolean = false
 ) : ListAdapter<Flashcard, FlashcardAdapterCompressed.FlashcardViewHolder>(FlashcardDiffCallback) {
@@ -69,11 +68,6 @@ class FlashcardAdapterCompressed(
                 popup.inflate(R.menu.flashcard_menu)
                 popup.setOnMenuItemClickListener {
                     when (it.itemId) {
-                        R.id.edit_flashcard -> {
-                            EditFlashcardDialogFragment.newInstance(flashcard.flashcardId)
-                                .show((view.context as androidx.fragment.app.FragmentActivity).supportFragmentManager, "edit_flashcard")
-                            true
-                        }
 
                         R.id.delete_flashcard -> {
                             // Play fade animation first

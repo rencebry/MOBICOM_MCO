@@ -8,5 +8,5 @@
         android:title="@string/delete_deck" />
     <item
         android:id="@+id/export_deck_txt"
-        android:title="@string/export_deck_txt" />
+        android:title="Copy Deck" />
 </menu>

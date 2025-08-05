@@ -58,7 +58,7 @@ class DeckAdapter(
         val deck = decks[position]
         holder.binding.apply {
             deckTitleTv.text = deck.deckTitle
-            deckInfoTv.text = "${deck.dateCreated} | ${deck.cardCount} flashcards"
+            deckInfoTv.text = "${deck.dateCreated}"
 
 
         }

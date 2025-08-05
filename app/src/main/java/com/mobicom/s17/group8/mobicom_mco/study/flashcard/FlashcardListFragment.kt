@@ -49,7 +49,7 @@ class FlashcardListFragment : Fragment() {
     private var currentDeck: Deck? = null
     private var currentFlashcards: List<Flashcard> = emptyList()
     private var showOnlyFavorites = false
-    private var isCompressedView = false
+    private var isCompressedView = true
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentFlashcardListBinding.inflate(inflater, container, false)
@@ -83,7 +83,7 @@ class FlashcardListFragment : Fragment() {
         }
 
         val screenHeight = resources.displayMetrics.heightPixels
-        val verticalPadding = (screenHeight * 0.25).toInt()
+        val verticalPadding = (screenHeight * 0.10).toInt()
         binding.rvFlashcards.setPadding(0, verticalPadding, 0, verticalPadding / 3)
         binding.rvFlashcards.clipToPadding = false
 
@@ -151,19 +151,11 @@ class FlashcardListFragment : Fragment() {
         return if (compressed) {
             FlashcardAdapterCompressed(
                 onDeleteFlashcard = { flashcard -> viewModel.deleteFlashcard(flashcard) },
-                onEditFlashcard = { flashcard ->
-                    EditFlashcardDialogFragment.newInstance(flashcard.flashcardId)
-                        .show(parentFragmentManager, "edit_flashcard")
-                },
                 onUpdateFlashcard = { flashcard -> viewModel.updateFlashcard(flashcard) }
             )
         } else {
             FlashcardAdapterExpanded(
                 onDeleteFlashcard = { flashcard -> viewModel.deleteFlashcard(flashcard) },
-                onEditFlashcard = { flashcard ->
-                    EditFlashcardDialogFragment.newInstance(flashcard.flashcardId)
-                        .show(parentFragmentManager, "edit_flashcard")
-                },
                 onUpdateFlashcard = { flashcard -> viewModel.updateFlashcard(flashcard) }
             )
         }
