@@ -56,6 +56,10 @@ class DeckListFragment : Fragment() {
         setupClickListeners()
 
         observeAndRefreshDecks()
+
+        binding.buttonBackToCourses.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun setupRecyclerView() {
