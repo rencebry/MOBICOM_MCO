@@ -66,6 +66,9 @@ class FlashcardListFragment : Fragment() {
                 (activity as? AppCompatActivity)?.supportActionBar?.title = currentDeck?.deckTitle
                 setupViews()
                 setupClickListeners()
+                parentFragmentManager.setFragmentResultListener("flashcard_added", viewLifecycleOwner) { _, _ ->
+                    args.deckId?.let { viewModel.loadFlashcardsForDeck(it) }
+                }
                 observeData()
             } else {
                 Toast.makeText(requireContext(), "Deck not found.", Toast.LENGTH_SHORT).show()

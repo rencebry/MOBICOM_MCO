@@ -83,7 +83,7 @@ class AddFlashcardDialogFragment : DialogFragment() {
                 lifecycleScope.launch {
                     val job = viewModel.addFlashcardAsync(deckId, courseId, question, answer)
                     job.join()
-                    Toast.makeText(requireContext(), "Flashcard saved!", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.setFragmentResult("flashcard_added", Bundle())
                     dismiss()
                 }
             } else {
